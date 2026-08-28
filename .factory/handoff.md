@@ -78,6 +78,30 @@ Deploy `dist/site` through the factory static deployment configuration:
 
 The factory owns registry credentials; do not publish from this checkout.
 
+## Live deployment verification
+
+`dist/site` was deployed to
+`https://agent-secret-capsule.sociobot.in/` on 2026-08-28 UTC with the factory
+Static Web Apps deployment configuration. The live `index.html` SHA-256 is
+`0708ad00ea557fc7387d88f7c65c55f1426eb7727c600b31602a687406577a56`, exactly
+matching the locally built artifact.
+
+- Factory `verify-url.sh` returned HTTP 200 in 862 ms with no console/page
+  errors, the expected title, `lang=en`, one `<h1>`, one main landmark, and no
+  missing image alt or unlabeled buttons.
+- A live Chromium smoke test at both 1366×900 and 390×844 found one `<h1>` and
+  `<main>`, successful skip-link keyboard navigation to `#main`, no Axe
+  serious/critical violations, no console errors, only the product origin in
+  normal first-load requests, an active service worker with no waiting update,
+  and a successful cached offline reload.
+- Live HTML responds `Cache-Control: public, max-age=0, must-revalidate`; the
+  deployed hash-named main JS responds `public, max-age=31536000, immutable`.
+  CSP, HSTS, nosniff, strict-origin referrer policy, and the camera/microphone/
+  geolocation permissions denial headers are present.
+- The production license verification endpoint accepted the product origin,
+  returned `200 {"valid":false,"reason":"invalid","expires_at":null}` for
+  an invalid token, and sent `Cache-Control: no-store`.
+
 ## Known environment limitation
 
 This container has no unlocked desktop Secret Service session. The successful
