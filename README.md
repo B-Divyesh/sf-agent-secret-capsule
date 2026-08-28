@@ -20,8 +20,9 @@ credential. It creates a new temporary directory with sample no-value receipts
 and prints its path. It does not read your keychain or `ASC_HOME`. Delete that
 directory to reset the command-line sample.
 
-The web sample is at `/demo/` or `/?demo=1`. It uses browser storage keys with
-the `demo:asc` prefix. Reset demo clears those sample keys.
+[Try the web sample](https://agent-secret-capsule.sociobot.in/demo/). It uses
+browser storage keys with the `demo:asc` prefix. Reset demo clears those sample
+keys.
 
 ## Install
 
@@ -81,9 +82,13 @@ npm run build
 cargo package -p agent-secret-capsule --allow-dirty
 ```
 
-`npm test` runs Rust tests, site unit checks, and browser checks. Claim tests
-are listed in `.factory/claims.json`. Build the static site with
-`npm run build:site`; it writes `dist/site` for deployment.
+Build the static site for deployment:
+
+```sh
+npm run build:site
+```
+
+The command writes `dist/site` for deployment.
 
 ## License
 

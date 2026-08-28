@@ -89,5 +89,12 @@
     "where": "privacy policy",
     "test": "npm run test:claim -- --grep @claim:site-privacy",
     "sandbox": "fresh browser visits landing, demo, and privacy; asserts zero cookies and only same-origin scripts and requests"
+  },
+  {
+    "id": "build-output",
+    "claim": "npm run build:site writes the static deployment site to dist/site.",
+    "where": "README Develop and verify",
+    "test": "npm run test:claim -- --grep @claim:build-output",
+    "sandbox": "the claim command runs the site build, then checks the deploy root, route documents, service worker, and Static Web Apps configuration"
   }
 ]

@@ -22,6 +22,8 @@ for (const [path, title] of routes) {
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
     await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);
+    await expect(page.locator('h1')).toBeFocused();
+    await expect(page.locator('#route-announcement')).toHaveText(`${title} loaded`);
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''))).toEqual([]);
     expect(errors).toEqual([]);
@@ -52,6 +54,14 @@ test('@claim:demo-isolation opens the isolated sample, stores no real data, and 
   await expect(page).toHaveURL(/\/$/);
   expect(await page.evaluate(() => Object.keys(sessionStorage))).toEqual([]);
   expect(requests.every((url) => new URL(url).origin === 'http://127.0.0.1:4173')).toBe(true);
+});
+
+test('Demo → Home focuses and announces the new route', async ({ page }) => {
+  await page.goto('/demo/');
+  await page.getByRole('link', { name: 'Start for real' }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
+  await expect(page.locator('#route-announcement')).toHaveText('Agent Secret Capsule — give one command a credential loaded');
 });
 
 test('@claim:offline-reload works offline after the first visit', async ({ page, context }) => {
@@ -139,6 +149,20 @@ test('@claim:site-privacy loads without analytics, advertising cookies, or third
   expect(scriptOrigins.every((origin) => origin === 'http://127.0.0.1:4173')).toBe(true);
 });
 
+test('@claim:build-output writes the static deployment site to dist/site', async () => {
+  for (const file of [
+    'dist/site/index.html',
+    'dist/site/demo/index.html',
+    'dist/site/privacy/index.html',
+    'dist/site/terms/index.html',
+    'dist/site/404.html',
+    'dist/site/sw.js',
+    'dist/site/staticwebapp.config.json'
+  ]) {
+    expect(existsSync(file), `${file} should be in the deploy artifact`).toBe(true);
+  }
+});
+
 test('the process-tree claim uses the compiled CLI', async ({}, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'The claim is exercised once, not per viewport.');
   execFileSync('cargo', ['test', '--locked', '--features', 'test-keyring', '--test', 'cli_claims', 'claim_process_tree_uses_the_documented_cli_and_stops_at_its_time_limit'], {
@@ -179,6 +203,17 @@ test('the 404 route has complete route-specific social metadata', async ({ page 
   await expect(page.locator('meta[name="twitter:title"]')).toHaveCount(1);
   await expect(page.locator('meta[name="twitter:description"]')).toHaveCount(1);
   await expect(page.locator('meta[name="twitter:image"]')).toHaveCount(1);
+});
+
+test('external GitHub links name their destination', async ({ page }) => {
+  for (const [path] of routes) {
+    await page.goto(path);
+    const source = page.getByRole('link', { name: 'Source on GitHub (external)' });
+    await expect(source).toHaveCount(1);
+    await expect(source).toHaveAttribute('href', /github\.com/);
+  }
+  await page.goto('/');
+  await expect(page.getByRole('link', { name: 'Read the CLI reference on GitHub (external)' })).toHaveAttribute('href', /github\.com/);
 });
 
 test('desktop first screen shows its audience and sample action', async ({ page }, testInfo) => {

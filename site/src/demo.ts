@@ -1,4 +1,5 @@
 import './styles.css';
+import { focusAndAnnounceRoute, keepSkipLinkFirstAfterRouteFocus } from './route-focus';
 
 if ('serviceWorker' in navigator) window.addEventListener('load', () => { void navigator.serviceWorker.register('/sw.js'); });
 
@@ -28,5 +29,5 @@ document.getElementById('leave-demo')?.addEventListener('click', () => {
   sessionStorage.removeItem(demoKey);
 });
 render();
-document.querySelector<HTMLElement>('h1')?.focus();
-announce.textContent = 'Demo page loaded';
+keepSkipLinkFirstAfterRouteFocus();
+focusAndAnnounceRoute();

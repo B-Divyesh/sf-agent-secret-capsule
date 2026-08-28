@@ -1,6 +1,6 @@
-# Copy audit — polish 3
+# Copy audit — polish 4
 
-Reviewed after the round-three rewrite. Landing and README visitor sentences
+Reviewed after the round-four rewrite. Landing and README visitor sentences
 are at most 22 words. Commands, field labels, route paths, and stamped UI
 fragments are excluded from sentence counts. No banned marketing term appears.
 
@@ -15,7 +15,8 @@ fragments are excluded from sentence counts. No banned marketing term appears.
 | Fact | No analytics or third-party scripts. | 5 | `site-privacy` |
 | Fact | Demo works offline after first visit. | 6 | `offline-reload` |
 | Fact | Free and open source. | 4 | `license-package` |
-| Figure | One chosen path for one credential. | 6 | Descriptive caption |
+| Figure | The selected process and its children receive one credential. | 9 | `process-tree` |
+| External link | Read the CLI reference on GitHub (external). | 7 | Destination is explicit |
 | Sample | See the command result first. | 5 | Clear heading |
 | Sample | The CLI ships with `asc demo`. | 6 | `cli-demo` |
 | Sample | It creates fake sample receipts in a new temporary directory. | 10 | `cli-demo` |
@@ -36,6 +37,7 @@ fragments are excluded from sentence counts. No banned marketing term appears.
 | Limits | Use a separate network and process sandbox for hostile code. | 10 | Clear instruction |
 | Footer | One command. | 2 | Descriptive fragment |
 | Footer | One no-value receipt. | 3 | `captured-output-receipt` |
+| External footer link | Source on GitHub (external). | 5 | Destination is explicit |
 
 ## Demo page
 
@@ -64,7 +66,7 @@ fragments are excluded from sentence counts. No banned marketing term appears.
 | Sample | It creates a new temporary directory with sample no-value receipts and prints its path. | 14 | `cli-demo` |
 | Sample | It does not read your keychain or `ASC_HOME`. | 8 | `cli-demo` |
 | Sample | Delete that directory to reset the command-line sample. | 8 | Clear instruction |
-| Web sample | The web sample is at `/demo/` or `/?demo=1`. | 8 | `demo-isolation` |
+| Web sample | Try the web sample. | 4 | `demo-isolation` |
 | Web sample | It uses browser storage keys with the `demo:asc` prefix. | 9 | `demo-isolation` |
 | Web sample | Reset demo clears those sample keys. | 6 | `demo-isolation` |
 | Install | Build from source. | 3 | Instruction |
@@ -82,6 +84,19 @@ fragments are excluded from sentence counts. No banned marketing term appears.
 | Limits | It can also transform the credential or pass it to a child. | 12 | Explicit limitation |
 | Limits | Review the exact command and endpoint. | 6 | Clear instruction |
 | Limits | Use a separate sandbox for hostile code. | 7 | Clear instruction |
+| Develop and verify | The command writes `dist/site` for deployment. | 7 | `build-output` |
+
+## Designed 404 page
+
+| Location | Sentence | Words | Claim/evidence |
+| --- | --- | ---: | --- |
+| Heading | This page does not exist. | 5 | Clear page state |
+
+## Catalog description
+
+| Location | Sentence | Characters | Claim/evidence |
+| --- | --- | ---: | --- |
+| Catalog | Run one coding-agent command with a temporary credential, redact output, and save a no-value receipt. | 101 | `process-tree`, `redaction-forms`, `captured-output-receipt` |
 
 ## Terminology
 
