@@ -231,13 +231,15 @@ code { color: var(--lichen); font-family: var(--font-body); }
 .boundary-copy { display: grid; gap: 24px; }
 
 
-.demo-banner { min-height: 56px; padding: 8px var(--gutter); display: flex; align-items: center; gap: 16px; border-bottom: var(--rule); background: #30392a; color: var(--ink); font-size: 13px; }
-.demo-banner strong { color: var(--moss); }.demo-banner span { flex: 1; color: var(--dust); }
+.demo-banner { min-height: 56px; padding: 8px var(--gutter); display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px; border-bottom: var(--rule); background: #30392a; color: var(--ink); font-size: 13px; }
+.demo-banner strong { color: var(--moss); }
+.demo-controls { display: flex; align-items: center; gap: 8px; }
 .demo-banner button, .demo-banner a { min-height: 44px; padding: 10px 12px; border: 1px solid var(--moss); background: transparent; color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; }
-.demo-main { min-height: 70vh; }.demo-page-head { max-width: 960px; padding: clamp(64px, 10vw, 136px) var(--gutter) 56px; }
-.demo-page-head h1 { max-width: 850px; margin: 14px 0 24px; font-size: clamp(48px, 7vw, 88px); line-height: 1; letter-spacing: -.04em; }.demo-page-head > p:last-child { max-width: 720px; color: var(--dust); font-size: 18px; }
-.demo-workbench { padding: 0 var(--gutter) clamp(72px, 10vw, 120px); display: grid; grid-template-columns: 1.2fr .8fr; gap: clamp(28px, 6vw, 80px); align-items: start; }
-.sample-receipt { padding: 28px; border: 2px solid var(--rebar); background: var(--slab); box-shadow: 12px 12px 0 #0e100e; }.sample-receipt dl { margin: 22px 0 30px; display: grid; grid-template-columns: 1fr auto; gap: 10px 20px; color: var(--dust); }.sample-receipt dt { color: var(--ink); }.sample-receipt dd { margin: 0; text-align: right; }.sample-receipt dd:last-child { color: var(--moss); }
+.demo-main { min-height: 70vh; }.demo-page-head { max-width: 1100px; padding: clamp(28px, 4vw, 48px) var(--gutter) 20px; }
+.demo-page-head h1 { max-width: 780px; margin: 8px 0 12px; font-size: clamp(38px, 4.6vw, 62px); line-height: 1; letter-spacing: -.04em; }.demo-page-head > p:last-child { max-width: 720px; color: var(--dust); font-size: 17px; }
+.demo-workbench { padding: 0 var(--gutter) clamp(48px, 7vw, 88px); display: grid; grid-template-columns: 1.2fr .8fr; gap: clamp(20px, 4vw, 56px); align-items: start; }
+.demo-workbench .terminal pre { min-height: 0; padding: clamp(16px, 2.5vw, 28px); line-height: 1.55; }
+.sample-receipt { padding: 22px; border: 2px solid var(--rebar); background: var(--slab); box-shadow: 12px 12px 0 #0e100e; }.sample-receipt dl { margin: 14px 0 20px; display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; color: var(--dust); }.sample-receipt dt { color: var(--ink); }.sample-receipt dd { margin: 0; text-align: right; }.sample-receipt dd:last-child { color: var(--moss); }
 .demo-notes { padding: clamp(56px, 9vw, 112px) var(--gutter); border-top: var(--rule); background: var(--slab-deep); }.demo-notes h2 { font-size: clamp(34px, 5vw, 56px); }.demo-notes ul, .demo-notes p { max-width: 700px; color: var(--dust); }.demo-notes li { margin: 10px 0; }
 
 footer { padding: 42px var(--gutter); display: grid; grid-template-columns: auto 1fr auto auto; gap: 32px; align-items: center; color: var(--dust); font-size: 13px; }
@@ -281,13 +283,14 @@ footer a { min-height: 44px; display: inline-flex; align-items: center; }
   .site-header { min-height: 64px; }
   nav { margin-left: auto; }
   .nav-buy { padding: 0 10px; }
-  .hero { padding-top: 56px; padding-bottom: 100px; gap: 52px; }
-  h1 { font-size: clamp(48px, 15vw, 68px); }
+  .hero { padding-top: 28px; padding-bottom: 64px; gap: 40px; }
+  h1 { margin: 16px 0 18px; font-size: clamp(42px, 12vw, 54px); line-height: .97; }
+  .lede { font-size: 16px; line-height: 1.4; }
   .eyebrow span:last-child { display: none; }
-  .hero-actions { display: grid; }
+  .hero-actions { display: grid; gap: 10px; margin-top: 20px; }
   .hero-actions .button { width: 100%; }
   .action-note { max-width: none; }
-  .plain-facts { display: grid; gap: 6px; }
+  .plain-facts { display: grid; gap: 4px; margin-top: 14px; font-size: 12px; }
   .hero-art::before { inset: -7px 7px 7px -7px; }
   .hero-art figcaption { display: grid; }
   .receipt-stamp { width: 230px; right: var(--gutter); bottom: 24px; }
@@ -302,8 +305,9 @@ footer a { min-height: 44px; display: inline-flex; align-items: center; }
   .boundary { grid-template-columns: 1fr; }
   .boundary-mark { width: 72px; height: 72px; font-size: 45px; }
   .boundary-copy { grid-column: 1; }
-  .demo-banner { align-items: flex-start; flex-wrap: wrap; gap: 8px 12px; }.demo-banner span { flex-basis: 100%; }.demo-banner button, .demo-banner a { flex: 1; justify-content: center; }
-  .demo-page-head { padding-top: 56px; }.demo-workbench { padding-bottom: 72px; }
+  .demo-banner { grid-template-columns: 1fr; align-items: start; gap: 6px; }.demo-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }.demo-banner button, .demo-banner a { justify-content: center; }
+  .demo-page-head { padding-top: 20px; padding-bottom: 14px; }.demo-page-head h1 { margin: 6px 0 10px; font-size: clamp(34px, 10vw, 40px); }.demo-page-head > p:last-child { font-size: 15px; line-height: 1.45; }
+  .demo-workbench { gap: 14px; padding-bottom: 48px; }.demo-workbench .terminal pre { min-height: 0; padding: 16px; font-size: 12px; line-height: 1.5; }.sample-receipt { padding: 16px; box-shadow: 8px 8px 0 #0e100e; }.sample-receipt dl { margin: 12px 0 16px; }
   footer { grid-template-columns: 1fr; }
   footer > p { justify-self: start; }
 }

@@ -10,7 +10,7 @@ const announce = document.getElementById('route-announcement')!;
 function render() {
   const count = Number(sessionStorage.getItem(demoKey) ?? '0');
   state.textContent = count ? `RUN ${count}` : 'READY';
-  output.innerHTML = `<span class="prompt">$</span> asc demo\n\nstdout credential=<span class="redacted">[REDACTED:ASC]</span>\nstderr credential=<span class="redacted">[REDACTED:ASC]</span>\n\n✓ sample command succeeded · 2 redactions\n✓ second sample command reached its 30ms time limit\n✓ receipt asc-demo-001 omits the credential`;
+  output.innerHTML = `<span class="prompt">$</span> asc demo\nstdout deployment=api-gateway environment=production state=healthy\nstdout authorization=Bearer <span class="redacted">[REDACTED:ASC]</span>\nstderr agent trace token=<span class="redacted">[REDACTED:ASC]</span>\n✓ second sample command reached its 30ms time limit`;
 }
 
 document.getElementById('rerun-demo')?.addEventListener('click', () => {

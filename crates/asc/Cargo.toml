@@ -10,6 +10,11 @@ repository.workspace = true
 rust-version.workspace = true
 readme = "../../README.md"
 
+[features]
+# Only used by black-box claim tests. Release binaries never compile the
+# file-backed test keychain path.
+test-keyring = []
+
 [[bin]]
 name = "asc"
 path = "src/main.rs"

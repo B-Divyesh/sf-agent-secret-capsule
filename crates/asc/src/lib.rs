@@ -40,6 +40,9 @@ pub struct LeaseRequest {
     pub env_name: String,
     pub command: Vec<OsString>,
     pub ttl: Duration,
+    /// An optional working directory for the selected process. The CLI demo
+    /// uses this for its bundled, disposable fixture.
+    pub current_dir: Option<PathBuf>,
 }
 
 #[derive(Debug)]
@@ -199,6 +202,9 @@ pub fn run_lease(request: &LeaseRequest, secret: &str) -> Result<LeaseResult, St
         .stdin(Stdio::inherit())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());
+    if let Some(current_dir) = &request.current_dir {
+        command.current_dir(current_dir);
+    }
     #[cfg(unix)]
     {
         use std::os::unix::process::CommandExt;
@@ -327,7 +333,6 @@ mod tests {
     use super::*;
 
     #[test]
-    // @claim:redaction-forms
     fn redacts_raw_and_encoded_forms() {
         let secret = "tok_en+value/42";
         let text = format!(
@@ -364,6 +369,7 @@ mod tests {
                 "printf '%s' \"$TOKEN\"; printf '%s' \"$TOKEN\" >&2".into(),
             ],
             ttl: Duration::from_secs(2),
+            current_dir: None,
         };
         let result = run_lease(&request, secret).unwrap();
         assert_eq!(result.stdout, REDACTION);
@@ -389,6 +395,7 @@ mod tests {
                 "(printf 'child=%s' \"$TOKEN\") & wait; printf 'parent=%s' \"$TOKEN\" >&2".into(),
             ],
             ttl: Duration::from_secs(2),
+            current_dir: None,
         };
         let result = run_lease(&request, secret).unwrap();
         assert_eq!(result.stdout, format!("child={REDACTION}"));
@@ -404,6 +411,7 @@ mod tests {
             env_name: "TOKEN".into(),
             command: vec!["sh".into(), "-c".into(), "sleep 1".into()],
             ttl: Duration::from_millis(30),
+            current_dir: None,
         };
         let started = Instant::now();
         let result = run_lease(&request, "capsule-example-987").unwrap();
@@ -426,6 +434,7 @@ mod tests {
                     "printf '%s\\n' \"$TOKEN\"; printf '%s' \"$TOKEN\" >&2".into(),
                 ],
                 ttl: Duration::from_secs(2),
+                current_dir: None,
             };
             let result = run_lease(&request, secret).unwrap();
             assert!(!result.stdout.contains(secret));

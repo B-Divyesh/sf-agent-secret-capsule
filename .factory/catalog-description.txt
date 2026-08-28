@@ -1,1 +1,1 @@
-Give one coding-agent command a temporary credential, redact its output, and keep a no-value receipt.
+Give a coding-agent command a temporary credential, redact its output, and save a no-value receipt.

@@ -13,6 +13,9 @@ use std::{
     time::Duration,
 };
 
+#[cfg(feature = "test-keyring")]
+use std::collections::BTreeMap;
+
 #[derive(Parser, Debug)]
 #[command(
     name = "asc",
@@ -61,19 +64,23 @@ enum Commands {
         command: Vec<OsString>,
     },
     /// List local aliases (never values)
+    #[command(after_help = "EXAMPLE:\n  asc list --json")]
     List,
     /// Delete a named secret and its local alias
+    #[command(after_help = "EXAMPLE:\n  asc remove cloudflare")]
     Remove {
         #[arg(value_parser = parse_secret_name)]
         name: String,
     },
     /// Show recent no-value command receipts
+    #[command(after_help = "EXAMPLE:\n  asc receipts --json")]
     Receipts {
         /// Maximum number of newest receipts to return
         #[arg(long, default_value_t = 20, value_parser = parse_limit)]
         limit: usize,
     },
     /// Report local capability and storage paths without reading any secret
+    #[command(after_help = "EXAMPLE:\n  asc doctor")]
     Doctor,
     /// Run bundled sample data in a new temporary directory (never uses your keychain)
     #[command(
@@ -208,10 +215,90 @@ fn keychain_entry(name: &str) -> Result<keyring::Entry, String> {
         .map_err(|error| format!("OS keychain is unavailable: {error}"))
 }
 
+#[cfg(feature = "test-keyring")]
+fn test_keychain_dir() -> Option<PathBuf> {
+    std::env::var_os("ASC_TEST_KEYRING_DIR").map(PathBuf::from)
+}
+
+#[cfg(feature = "test-keyring")]
+fn test_keychain_path(root: &Path) -> PathBuf {
+    root.join("isolated-test-keychain.json")
+}
+
+#[cfg(feature = "test-keyring")]
+fn load_test_keychain(root: &Path) -> Result<BTreeMap<String, String>, String> {
+    let path = test_keychain_path(root);
+    if !path.exists() {
+        return Ok(BTreeMap::new());
+    }
+    serde_json::from_slice(&fs::read(&path).map_err(|error| {
+        format!(
+            "could not read isolated test keychain {}: {error}",
+            path.display()
+        )
+    })?)
+    .map_err(|error| format!("could not parse isolated test keychain: {error}"))
+}
+
+/// This path is compiled only with the opt-in `test-keyring` feature. It lets
+/// claim tests exercise the installed CLI across separate processes without
+/// requiring a developer's OS keychain session in CI.
+#[cfg(feature = "test-keyring")]
+fn save_test_keychain(root: &Path, values: &BTreeMap<String, String>) -> Result<(), String> {
+    ensure_private_dir(root)?;
+    let path = test_keychain_path(root);
+    let temporary = root.join("isolated-test-keychain.json.new");
+    fs::write(
+        &temporary,
+        serde_json::to_vec(values)
+            .map_err(|error| format!("could not serialize test keychain: {error}"))?,
+    )
+    .map_err(|error| format!("could not write isolated test keychain: {error}"))?;
+    secure_file(&temporary)?;
+    fs::rename(&temporary, &path)
+        .map_err(|error| format!("could not replace isolated test keychain: {error}"))?;
+    Ok(())
+}
+
+fn store_secret(name: &str, value: &str) -> Result<(), String> {
+    #[cfg(feature = "test-keyring")]
+    if let Some(root) = test_keychain_dir() {
+        let mut values = load_test_keychain(&root)?;
+        values.insert(name.to_owned(), value.to_owned());
+        return save_test_keychain(&root, &values);
+    }
+    keychain_entry(name)?
+        .set_password(value)
+        .map_err(|error| format!("could not store '{name}' in the OS keychain: {error}"))
+}
+
 fn read_secret(name: &str) -> Result<String, String> {
+    #[cfg(feature = "test-keyring")]
+    if let Some(root) = test_keychain_dir() {
+        return load_test_keychain(&root)?
+            .get(name)
+            .cloned()
+            .ok_or_else(|| format!("could not read '{name}' from the isolated test keychain"));
+    }
     keychain_entry(name)?
         .get_password()
         .map_err(|error| format!("could not read '{name}' from the OS keychain: {error}"))
+}
+
+fn delete_secret(name: &str) -> Result<(), String> {
+    #[cfg(feature = "test-keyring")]
+    if let Some(root) = test_keychain_dir() {
+        let mut values = load_test_keychain(&root)?;
+        if values.remove(name).is_none() {
+            return Err(format!(
+                "could not remove '{name}' from the isolated test keychain"
+            ));
+        }
+        return save_test_keychain(&root, &values);
+    }
+    keychain_entry(name)?
+        .delete_credential()
+        .map_err(|error| format!("could not remove '{name}' from the OS keychain: {error}"))
 }
 
 fn command_put(name: String, from_stdin: bool, root: &Path, json: bool) -> Result<(), String> {
@@ -239,20 +326,14 @@ fn command_put(name: String, from_stdin: bool, root: &Path, json: bool) -> Resul
             "secret cannot contain a NUL byte because subprocess environments reject it".into(),
         );
     }
-    keychain_entry(&name)?
-        .set_password(&value)
-        .map_err(|error| format!("could not store '{name}' in the OS keychain: {error}"))?;
+    store_secret(&name, &value)?;
     let mut names = load_names(root)?;
     if !names.contains(&name) {
         names.push(name.clone());
         names.sort();
     }
     if let Err(error) = save_names(root, &names) {
-        let _ = keychain_entry(&name).and_then(|entry| {
-            entry
-                .delete_credential()
-                .map_err(|delete_error| delete_error.to_string())
-        });
+        let _ = delete_secret(&name);
         return Err(format!(
             "secret was rolled back after metadata failed: {error}"
         ));
@@ -269,9 +350,7 @@ fn command_put(name: String, from_stdin: bool, root: &Path, json: bool) -> Resul
 }
 
 fn command_remove(name: String, root: &Path, json: bool) -> Result<(), String> {
-    keychain_entry(&name)?
-        .delete_credential()
-        .map_err(|error| format!("could not remove '{name}' from the OS keychain: {error}"))?;
+    delete_secret(&name)?;
     let mut names = load_names(root)?;
     names.retain(|saved| saved != &name);
     save_names(root, &names)?;
@@ -377,30 +456,37 @@ fn demo_root() -> PathBuf {
 fn command_demo(json: bool) -> Result<(), String> {
     let root = demo_root();
     ensure_private_dir(&root)?;
-    let secret = "demo_credential_7Kp9mQ2x";
+    let secret = "demo_deploy_read_7Kp9mQ2x";
+    fs::write(
+        root.join("deployment-status.json"),
+        include_str!("../examples/deployment-status.json"),
+    )
+    .map_err(|error| format!("could not write bundled deployment fixture: {error}"))?;
     let success = LeaseRequest {
-        secret_name: "demo-api".into(),
-        env_name: "ASC_DEMO_TOKEN".into(),
+        secret_name: "deploy-status-readonly".into(),
+        env_name: "ASC_DEMO_DEPLOY_STATUS_TOKEN".into(),
         command: vec![
             "sh".into(),
             "-c".into(),
-            "printf 'stdout credential=%s\\n' \"$ASC_DEMO_TOKEN\"; printf 'stderr credential=%s\\n' \"$ASC_DEMO_TOKEN\" >&2".into(),
+            "set -e; test -f deployment-status.json; grep -q '\"state\": \"healthy\"' deployment-status.json; printf 'stdout deployment=api-gateway environment=production state=healthy\\n'; printf 'stdout authorization=Bearer %s\\n' \"$ASC_DEMO_DEPLOY_STATUS_TOKEN\"; printf 'stderr agent trace token=%s\\n' \"$ASC_DEMO_DEPLOY_STATUS_TOKEN\" >&2".into(),
         ],
         ttl: Duration::from_secs(2),
+        current_dir: Some(root.clone()),
     };
     let success_result = run_lease(&success, secret)?;
     append_receipt(&root, &success_result.receipt)?;
     let expiry = LeaseRequest {
-        secret_name: "demo-api".into(),
-        env_name: "ASC_DEMO_TOKEN".into(),
+        secret_name: "deploy-status-readonly".into(),
+        env_name: "ASC_DEMO_DEPLOY_STATUS_TOKEN".into(),
         command: vec!["sh".into(), "-c".into(), "sleep 1".into()],
         ttl: Duration::from_millis(30),
+        current_dir: Some(root.clone()),
     };
     let expiry_result = run_lease(&expiry, secret)?;
     append_receipt(&root, &expiry_result.receipt)?;
     fs::write(
         root.join("README.txt"),
-        "Agent Secret Capsule demo data. This directory contains only fake sample receipts. Delete this directory to reset the command-line demo.\n",
+        "Agent Secret Capsule demo data. deployment-status.json is a bundled read-only fake fixture. This directory contains only fake sample receipts. Delete this directory to reset the command-line demo.\n",
     )
     .map_err(|error| format!("could not write demo note: {error}"))?;
 
@@ -447,6 +533,7 @@ fn command_run(
         env_name: env,
         command,
         ttl,
+        current_dir: None,
     };
     let result = run_lease(&request, &secret)?;
     append_receipt(root, &result.receipt)?;

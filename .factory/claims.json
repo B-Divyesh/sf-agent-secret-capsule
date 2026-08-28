@@ -15,7 +15,7 @@
   },
   {
     "id": "cli-demo",
-    "claim": "asc demo creates redacted no-value sample receipts without reading the OS keychain or ASC_HOME.",
+    "claim": "asc demo checks a fake deployment-status fixture and creates redacted no-value sample receipts without reading the OS keychain or ASC_HOME.",
     "where": "landing sample section, README, .factory/demo.md",
     "test": "npm run test:claim -- --grep @claim:cli-demo",
     "sandbox": "CLI runs with a sentinel ASC_HOME and unavailable keychain session; test reads its separate temporary receipt log"
@@ -24,22 +24,57 @@
     "id": "redaction-forms",
     "claim": "ASC redacts raw, percent-encoded, Base64, Base64url, and hex credential forms from captured output.",
     "where": "README security limits",
-    "test": "cargo test --locked redacts_raw_and_encoded_forms",
-    "sandbox": "library lease/redaction fixture emits every listed form and asserts no configured value remains"
+    "test": "cargo test --locked --features test-keyring --test cli_claims claim_redaction_forms_removes_every_named_form_from_compiled_cli_output",
+    "sandbox": "compiled CLI runs against an isolated feature-gated test keychain and emits every named form on both streams"
   },
   {
     "id": "process-tree",
     "claim": "The selected process and its children receive the credential until exit or the time limit.",
     "where": "landing How it works, README security limits",
-    "test": "npm run test:claim -- --grep @claim:process-tree",
-    "sandbox": "the CLI lease fixture starts a shell child, asserts inherited output is redacted, then asserts expiry stops a lease"
+    "test": "cargo test --locked --features test-keyring --test cli_claims claim_process_tree_uses_the_documented_cli_and_stops_at_its_time_limit",
+    "sandbox": "compiled CLI runs a shell child with a measured 80ms time limit in an isolated test keychain"
   },
   {
     "id": "captured-output-receipt",
     "claim": "ASC captures both output streams and a no-value receipt omits the credential.",
     "where": "landing How it works, README security limits",
-    "test": "npm run test:claim -- --grep @claim:captured-output-receipt",
-    "sandbox": "the CLI lease fixture prints the value to stdout and stderr and serializes the receipt"
+    "test": "cargo test --locked --features test-keyring --test cli_claims claim_captured_output_and_receipt_omit_the_credential",
+    "sandbox": "compiled CLI prints a fixture credential to stdout and stderr, then its persisted receipt is inspected"
+  },
+  {
+    "id": "credential-lifecycle",
+    "claim": "ASC stores, lists, runs, and removes a local credential alias without listing its value.",
+    "where": "landing How it works, README Usage",
+    "test": "cargo test --locked --features test-keyring --test cli_claims claim_credential_lifecycle_stores_lists_runs_and_removes_an_alias",
+    "sandbox": "compiled CLI uses a disposable feature-gated test keychain and isolated ASC_HOME directory"
+  },
+  {
+    "id": "receipt-commands",
+    "claim": "ASC receipts shows newest-first no-value results in human and JSON output.",
+    "where": "README Usage",
+    "test": "cargo test --locked --features test-keyring --test cli_claims claim_receipt_commands_return_newest_first_human_and_json_no_value_results",
+    "sandbox": "compiled CLI creates two fixture receipts, then checks both receipt commands and their ordering"
+  },
+  {
+    "id": "receipt-storage-schema",
+    "claim": "ASC stores aliases and receipt metadata in its private local data directory.",
+    "where": "privacy policy",
+    "test": "cargo test --locked --features test-keyring --test cli_claims claim_receipt_storage_schema_is_private_and_contains_only_declared_metadata",
+    "sandbox": "compiled CLI uses an isolated data directory and asserts permissions, exact receipt fields, and credential omission"
+  },
+  {
+    "id": "cli-interface",
+    "claim": "ASC help includes command examples and rejects non-terminal put input without --stdin.",
+    "where": "README Usage",
+    "test": "cargo test --locked --features test-keyring --test cli_claims claim_cli_interface_help_and_non_tty_input_behave_as_documented",
+    "sandbox": "compiled CLI checks root and every subcommand help plus the non-TTY negative case"
+  },
+  {
+    "id": "demo-parity",
+    "claim": "The browser preview shows the same fake deployment-status result as asc demo.",
+    "where": "/demo",
+    "test": "npm run test:claim -- --grep @claim:demo-parity",
+    "sandbox": "fresh browser preview is compared with the compiled CLI demo's redacted stdout and stderr"
   },
   {
     "id": "license-package",

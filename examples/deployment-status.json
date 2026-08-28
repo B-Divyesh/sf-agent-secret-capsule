@@ -1,0 +1,6 @@
+{
+  "service": "api-gateway",
+  "environment": "production",
+  "state": "healthy",
+  "scope": "read-only deployment status"
+}

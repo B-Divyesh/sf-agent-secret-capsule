@@ -79,12 +79,30 @@ test('@claim:cli-demo creates redacted no-value sample receipts without using th
   const demo = JSON.parse(output) as { directory: string; stdout: string; stderr: string; receipts: Array<Record<string, unknown>> };
   expect(demo.stdout).toContain('[REDACTED:ASC]');
   expect(demo.stderr).toContain('[REDACTED:ASC]');
-  expect(demo.stdout).not.toContain('demo_credential_7Kp9mQ2x');
-  expect(demo.stderr).not.toContain('demo_credential_7Kp9mQ2x');
+  expect(demo.stdout).toContain('deployment=api-gateway environment=production state=healthy');
+  expect(demo.stdout).not.toContain('demo_deploy_read_7Kp9mQ2x');
+  expect(demo.stderr).not.toContain('demo_deploy_read_7Kp9mQ2x');
   expect(existsSync(sentinel)).toBe(false);
   const receiptText = readFileSync(`${demo.directory}/receipts.jsonl`, 'utf8');
-  expect(receiptText).not.toContain('demo_credential_7Kp9mQ2x');
+  expect(receiptText).not.toContain('demo_deploy_read_7Kp9mQ2x');
+  expect(existsSync(`${demo.directory}/deployment-status.json`)).toBe(true);
   expect(demo.receipts).toHaveLength(2);
+  rmSync(demo.directory, { recursive: true, force: true });
+});
+
+test('@claim:demo-parity shows the CLI demo’s fake deployment-status result in the browser preview', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop', 'The compiled CLI comparison is exercised once, not per viewport.');
+  const output = execFileSync('cargo', ['run', '--quiet', '-p', 'agent-secret-capsule', '--', '--json', 'demo'], {
+    cwd: process.cwd(), encoding: 'utf8'
+  });
+  const demo = JSON.parse(output) as { directory: string; stdout: string; stderr: string };
+  await page.goto('/demo/');
+  const preview = await page.locator('#demo-output').innerText();
+  for (const line of [...demo.stdout.trim().split('\n'), ...demo.stderr.trim().split('\n')]) {
+    expect(preview).toContain(line);
+  }
+  await expect(page.getByText('deploy-status-readonly', { exact: true })).toBeVisible();
+  await expect(page.getByText('succeeded', { exact: true })).toBeVisible();
   rmSync(demo.directory, { recursive: true, force: true });
 });
 
@@ -103,6 +121,7 @@ test('@claim:license-package source and packaged CLI use the MIT License', async
   }).split('\n');
   expect(packageFiles).toContain('LICENSE');
   expect(packageFiles).toContain('README.md');
+  expect(packageFiles).toContain('examples/deployment-status.json');
 });
 
 test('@claim:site-privacy loads without analytics, advertising cookies, or third-party scripts', async ({ page, context }) => {
@@ -120,17 +139,16 @@ test('@claim:site-privacy loads without analytics, advertising cookies, or third
   expect(scriptOrigins.every((origin) => origin === 'http://127.0.0.1:4173')).toBe(true);
 });
 
-test('@claim:process-tree gives the credential to the selected process children until the time limit', async ({}, testInfo) => {
+test('the process-tree claim uses the compiled CLI', async ({}, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'The claim is exercised once, not per viewport.');
-  execFileSync('cargo', ['test', '--locked', 'selected_process_children_inherit_the_credential_and_are_redacted'], {
+  execFileSync('cargo', ['test', '--locked', '--features', 'test-keyring', '--test', 'cli_claims', 'claim_process_tree_uses_the_documented_cli_and_stops_at_its_time_limit'], {
     cwd: process.cwd(), stdio: 'pipe'
   });
-  execFileSync('cargo', ['test', '--locked', 'expired_lease_stops_command'], { cwd: process.cwd(), stdio: 'pipe' });
 });
 
-test('@claim:captured-output-receipt redacts both captured streams and omits the credential from the receipt', async ({}, testInfo) => {
+test('the captured-output claim uses the compiled CLI', async ({}, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'The claim is exercised once, not per viewport.');
-  execFileSync('cargo', ['test', '--locked', 'documented_run_scrubs_output_and_records_no_value'], {
+  execFileSync('cargo', ['test', '--locked', '--features', 'test-keyring', '--test', 'cli_claims', 'claim_captured_output_and_receipt_omit_the_credential'], {
     cwd: process.cwd(), stdio: 'pipe'
   });
 });
@@ -175,12 +193,41 @@ test('desktop first screen shows its audience and sample action', async ({ page 
   expect(action!.y + action!.height).toBeLessThanOrEqual(900);
 });
 
+test('the populated demo shows redaction, expiry, and receipt evidence in the initial viewport', async ({ page }, testInfo) => {
+  if (testInfo.project.name === 'desktop') {
+    await page.setViewportSize({ width: 1440, height: 900 });
+  } else {
+    await page.setViewportSize({ width: 390, height: 844 });
+  }
+  await page.goto('/demo/');
+  const viewport = page.viewportSize()!.height;
+  for (const locator of [
+    page.getByText('stdout authorization=Bearer', { exact: false }),
+    page.getByText('second sample command reached its 30ms time limit', { exact: false }),
+    page.getByText('deploy-status-readonly', { exact: true }),
+    page.getByText('succeeded', { exact: true })
+  ]) {
+    const box = await locator.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.y + box!.height).toBeLessThanOrEqual(viewport);
+  }
+});
+
 test('mobile controls meet the touch target and never overflow', async ({ page }) => {
   await page.goto('/');
   const audience = await page.locator('.lede').boundingBox();
   const primaryAction = await page.getByRole('link', { name: 'Try it with sample data' }).boundingBox();
   expect(audience!.y + audience!.height).toBeLessThanOrEqual(844);
   expect(primaryAction!.y + primaryAction!.height).toBeLessThanOrEqual(844);
+  for (const fact of [
+    'No analytics or third-party scripts',
+    'Demo works offline after first visit',
+    'Free and open source'
+  ]) {
+    const box = await page.getByText(fact, { exact: true }).boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.y + box!.height).toBeLessThanOrEqual(844);
+  }
   await page.goto('/demo/');
   for (const name of ['Reset demo', 'Start for real']) {
     const box = await page.getByRole(name === 'Reset demo' ? 'button' : 'link', { name }).boundingBox();

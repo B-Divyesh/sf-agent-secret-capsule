@@ -1,4 +1,4 @@
-const CACHE = 'asc-shell-v2';
+const CACHE = 'asc-shell-v3';
 const SHELL = [
   '/',
   '/demo/',

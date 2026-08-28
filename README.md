@@ -15,9 +15,10 @@ Run the bundled sample before storing a real credential:
 cargo run -p agent-secret-capsule -- demo
 ```
 
-The command uses a fake credential. It creates a new temporary directory with
-sample no-value receipts and prints its path. It does not read your keychain or
-`ASC_HOME`. Delete that directory to reset the command-line sample.
+The command checks a bundled fake deployment-status fixture. It uses a fake
+credential. It creates a new temporary directory with sample no-value receipts
+and prints its path. It does not read your keychain or `ASC_HOME`. Delete that
+directory to reset the command-line sample.
 
 The web sample is at `/demo/` or `/?demo=1`. It uses browser storage keys with
 the `demo:asc` prefix. Reset demo clears those sample keys.
@@ -39,7 +40,7 @@ Store a credential from standard input:
 printf '%s' "$CLOUDFLARE_API_TOKEN" | asc put cloudflare --stdin
 ```
 
-Run a selected process tree with a 30-second time limit:
+Run a selected process tree with a time limit:
 
 ```sh
 asc run cloudflare --env CLOUDFLARE_API_TOKEN --ttl 30s -- \
@@ -55,8 +56,9 @@ asc list --json
 asc remove cloudflare
 ```
 
-Run `asc --help` or `asc <command> --help` for flags, exit codes, and examples.
-When standard input is not a terminal, `put` requires `--stdin`.
+Run `asc --help` for commands and exit codes. Run `asc <command> --help` for
+flags and examples. When standard input is not a terminal, `put` requires
+`--stdin`.
 
 ## Security limits
 
