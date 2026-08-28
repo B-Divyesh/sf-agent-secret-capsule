@@ -213,12 +213,24 @@ pub fn run_lease(request: &LeaseRequest, secret: &str) -> Result<LeaseResult, St
             #[cfg(unix)]
             // SAFETY: the PID comes from the live child. A negative PID targets
             // only the isolated process group created above.
-            unsafe {
-                libc::kill(-(child.id() as i32), libc::SIGKILL);
+            let tree_stopped = unsafe { libc::kill(-(child.id() as i32), libc::SIGKILL) == 0 };
+            #[cfg(target_os = "windows")]
+            let tree_stopped = {
+                Command::new("taskkill")
+                    .args(["/PID", &child.id().to_string(), "/T", "/F"])
+                    .stdin(Stdio::null())
+                    .stdout(Stdio::null())
+                    .stderr(Stdio::null())
+                    .status()
+                    .is_ok_and(|status| status.success())
+            };
+            #[cfg(not(any(unix, target_os = "windows")))]
+            let tree_stopped = false;
+            if !tree_stopped {
+                child.kill().map_err(|error| {
+                    format!("lease expired but command could not be stopped: {error}")
+                })?;
             }
-            child.kill().map_err(|error| {
-                format!("lease expired but command could not be stopped: {error}")
-            })?;
             break child
                 .wait()
                 .map_err(|error| format!("could not reap expired command: {error}"))?;
