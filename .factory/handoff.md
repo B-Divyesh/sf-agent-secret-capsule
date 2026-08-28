@@ -34,8 +34,8 @@
   100/100 complete successfully and neither captured stream contains the raw
   configured secret.
 - `cargo clippy --workspace --all-targets -- -D warnings`: passes.
-- `cargo package -p agent-secret-capsule --allow-dirty`: packages and verifies
-  successfully (22.6 KiB compressed package). Registry publishing was not
+- `cargo package -p agent-secret-capsule`: packages and verifies successfully
+  (22.7 KiB compressed package). Registry publishing was not
   attempted; the factory owns credentials.
 - `npm run build`: passes. It produces `target/release/asc` (3.2 MiB) and
   `dist/site/index.html` plus the legal routes.
