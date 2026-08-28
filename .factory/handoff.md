@@ -2,9 +2,9 @@
 
 ## Outcome
 
-All findings from adversarial reviews 1–3 are closed. The implementation is
-`d9737dd9b8bfaf20ccae35ab8fcbe9cc6d90de00`; this handoff, the final ledger,
-and evidence are committed after it. The static deployment
+All findings from adversarial reviews 1–3 are closed. The deployed implementation
+is `d9737dd9b8bfaf20ccae35ab8fcbe9cc6d90de00`; the evidence-and-handoff commit
+is `1244469ad5de1fe96edb3950350e22324ea991bf`. The static deployment
 `09283e34-d89d-42b4-91f0-414ed0641b9d` is live at
 <https://agent-secret-capsule.sociobot.in/>.
 
