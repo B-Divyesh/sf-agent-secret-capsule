@@ -24,6 +24,9 @@ document.getElementById('reset-demo')?.addEventListener('click', () => {
   render();
   announce.textContent = 'Demo reset. Sample data is back to its starting state.';
 });
+document.getElementById('leave-demo')?.addEventListener('click', () => {
+  sessionStorage.removeItem(demoKey);
+});
 render();
 document.querySelector<HTMLElement>('h1')?.focus();
 announce.textContent = 'Demo page loaded';

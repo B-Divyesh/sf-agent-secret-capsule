@@ -24,7 +24,7 @@ the `demo:asc` prefix. Reset demo clears those sample keys.
 
 ## Install
 
-Build with Rust 1.85 or newer:
+Build from source:
 
 ```sh
 cargo install --path crates/asc
@@ -65,9 +65,10 @@ the time limit. It redacts raw, percent-encoded, Base64, Base64url, and hex
 matches from captured stdout and stderr. A no-value receipt omits the
 credential value.
 
-This is not a sandbox. An authorized process can send a credential over the
-network, write it to a file, transform it, or pass it to a child. Review the
-exact command and endpoint. Use a separate sandbox for hostile code.
+This is not a sandbox. An authorized process can send the credential over the
+network or write it to a file. It can also transform the credential or pass it
+to a child. Review the exact command and endpoint. Use a separate sandbox for
+hostile code.
 
 ## Develop and verify
 

@@ -252,6 +252,13 @@ footer a { min-height: 44px; display: inline-flex; align-items: center; }
 .legal-main p, .legal-main li { color: var(--dust); }
 .legal-main .updated { color: var(--moss); font-size: 13px; }
 
+@media (min-width: 901px) {
+  .hero { padding-top: clamp(48px, 5vw, 72px); padding-bottom: 48px; gap: clamp(40px, 5vw, 80px); }
+  .hero h1 { font-size: clamp(60px, 5.5vw, 80px); line-height: .94; }
+  .hero-actions { margin-top: 28px; }
+  .plain-facts { margin-top: 18px; }
+}
+
 @media (max-width: 900px) {
   nav a:not(:first-child) { display: none; }
   .wide-brand { display: none; }

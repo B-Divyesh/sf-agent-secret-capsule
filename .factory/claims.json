@@ -15,10 +15,10 @@
   },
   {
     "id": "cli-demo",
-    "claim": "asc demo creates redacted no-value sample receipts without reading ASC_HOME.",
+    "claim": "asc demo creates redacted no-value sample receipts without reading the OS keychain or ASC_HOME.",
     "where": "landing sample section, README, .factory/demo.md",
     "test": "npm run test:claim -- --grep @claim:cli-demo",
-    "sandbox": "built CLI with a sentinel ASC_HOME runs demo; test reads the temporary receipt log"
+    "sandbox": "CLI runs with a sentinel ASC_HOME and unavailable keychain session; test reads its separate temporary receipt log"
   },
   {
     "id": "redaction-forms",
@@ -40,5 +40,19 @@
     "where": "landing How it works, README security limits",
     "test": "npm run test:claim -- --grep @claim:captured-output-receipt",
     "sandbox": "the CLI lease fixture prints the value to stdout and stderr and serializes the receipt"
+  },
+  {
+    "id": "license-package",
+    "claim": "Agent Secret Capsule source and its packaged CLI use the MIT License.",
+    "where": "landing fact, terms, README",
+    "test": "npm run test:claim -- --grep @claim:license-package",
+    "sandbox": "Cargo metadata declares MIT; the exact license text and packaged file list include LICENSE and README"
+  },
+  {
+    "id": "site-privacy",
+    "claim": "The site loads without analytics, advertising cookies, or third-party scripts.",
+    "where": "privacy policy",
+    "test": "npm run test:claim -- --grep @claim:site-privacy",
+    "sandbox": "fresh browser visits landing, demo, and privacy; asserts zero cookies and only same-origin scripts and requests"
   }
 ]

@@ -17,8 +17,8 @@ use std::{
 #[command(
     name = "asc",
     version,
-    about = "Give one command an expiring secret lease without leaking its value",
-    long_about = "Agent Secret Capsule stores named credentials in your OS keychain, injects one into a selected subprocess, captures and scrubs its output, and writes a no-value receipt.\n\nSecurity boundary: an authorized command can still send a secret over the network, transform it, write it to disk, or pass it to a child. Use a sandbox for hostile code.",
+    about = "Give one command a temporary credential with redacted output",
+    long_about = "Agent Secret Capsule stores named credentials in your OS keychain. It gives one credential to a selected process and its children until exit or the time limit. It captures and redacts their output, then writes a no-value receipt.\n\nSecurity limit: an authorized command can send the credential over the network or write it to disk. It can also transform the credential or pass it to a child. Use a sandbox for hostile code.",
     after_help = "EXIT CODES:\n  0 success\n  2 usage error\n  3 keychain or local-data error\n  4 command could not start\n  124 lease expired\n  otherwise the child command's exit code"
 )]
 struct Cli {
@@ -53,7 +53,7 @@ enum Commands {
         /// Environment variable exposed to the selected subprocess
         #[arg(long, value_parser = parse_env_name)]
         env: String,
-        /// Lease duration (for example 500ms, 30s, 2m; maximum 60m)
+        /// Time limit (for example 500ms, 30s, 2m; maximum 60m)
         #[arg(long, default_value = "30s", value_parser = parse_ttl)]
         ttl: Duration,
         /// Program and arguments. Prefix with `--` so program flags pass through unchanged.
@@ -421,7 +421,7 @@ fn command_demo(json: bool) -> Result<(), String> {
         eprint!("{}", success_result.stderr);
         println!("Demo complete. Sample receipts: {}", root.display());
         println!(
-            "The fake credential was redacted before output. A second sample lease expired after 30ms."
+            "The fake credential was redacted before output. A second sample reached its 30ms time limit."
         );
         println!(
             "Delete that directory to reset this command-line demo. Your keychain and ASC_HOME were not used."

@@ -8,8 +8,8 @@ Open `https://agent-secret-capsule.sociobot.in/demo/` or
 
 The page displays the bundled fake sample result. It saves only a sample run
 count in `sessionStorage` with the `demo:asc:` prefix. It never reads or writes
-normal site data. **Reset demo** clears that prefix; **Start for real** leaves
-the route and returns home.
+normal site data. **Reset demo** clears that prefix. **Start for real** clears
+the same prefix before it leaves the route and returns home.
 
 ## CLI demo
 
