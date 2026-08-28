@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-08-28T18:41:56.637Z",
+  "base": "https://agent-secret-capsule.sociobot.in",
+  "errors": [],
+  "desktop": {
+    "audienceBottom": 671.125,
+    "actionBottom": 750.390625,
+    "viewportHeight": 900
+  },
+  "backFocus": true,
+  "mobileDemo": {
+    "banner": true,
+    "overflow": false,
+    "targets": [
+      {
+        "name": "Reset demo",
+        "width": 169,
+        "height": 44
+      },
+      {
+        "name": "Start for real",
+        "width": 169,
+        "height": 44
+      }
+    ],
+    "origins": [
+      "https://agent-secret-capsule.sociobot.in"
+    ]
+  },
+  "notFound": {
+    "status": 404,
+    "title": "Page not found — Agent Secret Capsule",
+    "ogType": "website",
+    "ogTitle": "Page not found — Agent Secret Capsule",
+    "ogDescription": "This Agent Secret Capsule path was not found. Return home or open the sample run.",
+    "ogImage": "https://agent-secret-capsule.sociobot.in/assets/generated/capsule-social.webp",
+    "twitterCard": "summary_large_image",
+    "twitterTitle": "Page not found — Agent Secret Capsule",
+    "twitterDescription": "This Agent Secret Capsule path was not found. Return home or open the sample run.",
+    "twitterImage": "https://agent-secret-capsule.sociobot.in/assets/generated/capsule-social.webp"
+  }
+}

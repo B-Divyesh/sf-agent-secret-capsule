@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="theme-color" content="#171a17" />
+    <meta name="description" content="Run the isolated Agent Secret Capsule sample with fake credentials and no saved real data." />
+    <link rel="canonical" href="https://agent-secret-capsule.sociobot.in/demo/" />
+    <meta property="og:type" content="website" /><meta property="og:title" content="Demo — Agent Secret Capsule" /><meta property="og:description" content="See a fake credential redacted before command output and omitted from a sample receipt." /><meta property="og:image" content="https://agent-secret-capsule.sociobot.in/assets/generated/capsule-social.webp" />
+    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="Demo — Agent Secret Capsule" /><meta name="twitter:description" content="See a fake credential redacted before command output and omitted from a sample receipt." /><meta name="twitter:image" content="https://agent-secret-capsule.sociobot.in/assets/generated/capsule-social.webp" />
+    <title>Demo — Agent Secret Capsule</title><link rel="icon" href="/favicon.svg" type="image/svg+xml" /><link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" href="/assets/fonts/dejavu-sans-mono.woff2" as="font" type="font/woff2" crossorigin /><link rel="preload" href="/assets/fonts/dejavu-serif-bold.woff2" as="font" type="font/woff2" crossorigin />
+    <script type="module" crossorigin src="/assets/demo-INn1Z0Fz.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/styles-B5Qt9EMX.js">
+    <link rel="stylesheet" crossorigin href="/assets/style-Dbw9iziQ.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header"><a class="brand" href="/" aria-label="Agent Secret Capsule home"><span class="brand-mark" aria-hidden="true"><i></i></span><span>ASC<span class="wide-brand"> / AGENT SECRET CAPSULE</span></span></a><nav aria-label="Primary navigation"><a href="/demo/" aria-current="page">Demo</a><a href="/#how">How it works</a><a href="/#install">Install</a><a href="/privacy/">Privacy</a></nav></header>
+    <aside class="demo-banner" aria-label="Demo controls"><strong>Demo — sample data, nothing is saved</strong><span>Browser samples use the <code>demo:asc</code> storage namespace.</span><button id="reset-demo" type="button">Reset demo</button><a id="leave-demo" href="/">Start for real</a></aside>
+    <p id="route-announcement" class="sr-only" aria-live="polite"></p>
+    <main id="main" class="demo-main" tabindex="-1"><section class="demo-page-head" aria-labelledby="demo-title"><p class="kicker">ISOLATED SAMPLE RUN</p><h1 id="demo-title" tabindex="-1">See a credential redacted before it reaches the receipt.</h1><p>Use this sample to inspect the result. Run <code>asc demo</code> locally for the same fake-data workflow.</p></section>
+      <section class="demo-workbench" aria-label="Sample command result"><div class="terminal"><div class="terminal-bar"><span>ASC / SAMPLE</span><span id="demo-state">READY</span></div><pre id="demo-output" aria-live="polite"><span class="prompt">$</span> asc demo
+
+stdout credential=<span class="redacted">[REDACTED:ASC]</span>
+stderr credential=<span class="redacted">[REDACTED:ASC]</span>
+
+✓ sample command succeeded · 2 redactions
+✓ second sample command reached its 30ms time limit
+✓ receipt asc-demo-001 omits the credential</pre></div>
+      <div class="sample-receipt"><p class="kicker">SAMPLE NO-VALUE RECEIPT</p><dl><dt>Alias</dt><dd>demo-api</dd><dt>Executable</dt><dd>sh</dd><dt>Outcome</dt><dd>succeeded</dd><dt>Redactions</dt><dd>2</dd><dt>Credential value</dt><dd>omitted</dd></dl><button id="rerun-demo" class="button button-primary" type="button">Run sample again</button></div></section>
+      <section class="demo-notes"><h2>What this sample does</h2><ul><li>Uses a fake credential, never a real one.</li><li>Keeps browser sample state separate from normal site data.</li><li>Shows the actual CLI demo command and no-value receipt shape.</li></ul><p>For the command-line sample, run <code>asc demo</code>. It creates a new temporary directory and prints its path.</p></section>
+    </main>
+    <footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><i></i></span><span>ASC</span></a><p>One command. One no-value receipt.</p><div><a href="https://github.com/B-Divyesh/sf-agent-secret-capsule">Source</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div><small>Built by Param Factory · v0.1.0</small></footer>
+  </body>
+</html>

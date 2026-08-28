@@ -1,73 +1,113 @@
-# Agent Secret Capsule — review 2 handoff
-
-## Review 2 outcome
-
-No product code was changed. \`.factory/review-2.md\` records a **FAIL** at
-\`0f4225b\`: the desktop first screen hides its audience copy and sample CTA, and
-several public claims are missing claims-manifest coverage. It also records a
-23-word README warning/lease jargon and missing 404 social metadata.
-
-From a fresh GitHub clone: \`npm ci\`, \`npm test\`, and all six listed claim
-commands passed. The reviewer also ran \`asc --json demo\` from a new temp
-directory with a sentinel \`ASC_HOME\`; it generated separate redacted no-value
-receipts and left the sentinel empty. Live mobile/desktop browser checks covered
-the demo sandbox/reset/storage/request log, routes, link crawl, Back focus, and
-console errors. See \`.factory/review-2.md\` for evidence and exact fixes.
-
-## Earlier polish handoff
+# Agent Secret Capsule — polish 2 handoff
 
 ## Delivered
 
-- Repaired every B1–B6 and M1–M4 item in `.factory/review-1.md`; the detailed finding map is `.factory/polish-1.md`.
-- Added a one-click `/demo/` sandbox, `?demo=1` entry, persistent banner, reset/start controls, separate `demo:asc:` browser storage, and documented reset behavior.
-- Added the actual `asc demo` command. It uses fake bundled data, calls the production lease/redaction/receipt code, creates a fresh temporary directory, and does not read `ASC_HOME` or the OS keychain.
-- Rewrote first-screen and README copy, removed unavailable billing, and added claim inventory/tests, static route metadata, designed 404, discovery assets, legal skeleton, focus management, mobile targets, and derived social assets.
+Every finding in `review-2.md` and the complete earlier `review-1.md` ledger is
+closed. The per-finding change and evidence map is `.factory/polish-2.md`.
 
-## Verification
+- The full developer audience line and **Try it with sample data** action fit
+  inside both 1440×900 and 390×844 first screens.
+- `/demo/` and `?demo=1` open the isolated sample. Reset and Start for real
+  both discard `demo:asc:` session state. The CLI demo uses a fresh temporary
+  directory and succeeds when `ASC_HOME` and the keychain session are unusable.
+- The claims manifest now covers eight public claims. The prompt and compiler-
+  version promises were removed; MIT/package and site-privacy claims gained
+  observable tests.
+- The published crate now includes the exact MIT `LICENSE` as well as declaring
+  `MIT` in Cargo metadata.
+- The 404 keeps its real HTTP 404 response and now has complete route-specific
+  Open Graph and Twitter metadata.
+- The long README warning was split, “secret leasing” was removed from visitor
+  copy, and `.factory/copy-audit.md` has no sentence over 22 words.
+- The existing brutalist concrete-and-moss identity, CLI artifact class, and
+  static Vite deployment class remain unchanged.
 
-From this checkout:
+Implementation commit: `3a36e49eded9f501730f90f2aa1c38a02883cd54`.
+
+## Clean-clone verification
+
+A fresh `git clone --no-local /work/repo` was created at
+`/tmp/tmp.crLY5pPcnD/repo`, followed by `npm ci`. Every command in
+`.factory/claims.json` was then executed independently:
+
+| Claim | Result |
+| --- | --- |
+| `@claim:demo-isolation` | PASS, desktop and mobile |
+| `@claim:offline-reload` | PASS, desktop and mobile |
+| `@claim:cli-demo` | PASS, one execution plus intentional mobile duplicate skip |
+| `redacts_raw_and_encoded_forms` | PASS |
+| `@claim:process-tree` | PASS, one execution plus intentional mobile duplicate skip |
+| `@claim:captured-output-receipt` | PASS, one execution plus intentional mobile duplicate skip |
+| `@claim:license-package` | PASS, one execution plus intentional mobile duplicate skip |
+| `@claim:site-privacy` | PASS, desktop and mobile |
+
+The complete clean-clone `npm test` also passed: 10 Rust tests, 2 Vitest tests,
+and 29 Playwright tests; five redundant mobile executions of CLI-only claims
+were intentionally skipped.
+
+Additional local gates:
 
 ```text
 npm ci                                                        PASS (60 packages, 0 vulnerabilities)
-npm test                                                      PASS (10 Rust, 2 Vitest, 21 Playwright; 3 mobile-only skips)
+npm test                                                      PASS
 npm run build                                                 PASS (target/release/asc and dist/site)
 cargo fmt --check                                             PASS
 cargo clippy --workspace --all-targets --locked -- -D warnings PASS
-cargo package -p agent-secret-capsule --allow-dirty            PASS (8 files, 87.8 KiB unpacked / 24.4 KiB compressed)
+cargo package -p agent-secret-capsule --allow-dirty            PASS (9 files, 88.9 KiB / 25.1 KiB compressed)
 ```
 
-Every command in `.factory/claims.json` was run independently and passed:
+The browser suite covers the five pages at desktop and 390 px, serious/critical
+Axe checks, exact 1440×900 and 390×844 hero bounds, keyboard skip navigation,
+Back-button h1 focus, route metadata, a real 404, 44 px targets, no horizontal
+overflow, reduced motion, demo isolation/exit cleanup, same-origin privacy, and
+offline reload.
 
-```text
-@claim:demo-isolation              PASS
-@claim:offline-reload              PASS
-@claim:cli-demo                    PASS
-@claim:redaction-forms             PASS
-@claim:process-tree                PASS
-@claim:captured-output-receipt     PASS
-```
+Local verifier evidence is in `.factory/evidence/polish-2-local/` and
+`.factory/evidence/polish-2-local-demo/`. Both have correct titles, `lang=en`,
+one h1, a main landmark, complete alt/button labels, and zero browser errors.
 
-`verify-url.sh` passed for local `/` and `/demo/`: each report has a title, `lang=en`, one h1, main landmark, zero missing image alt attributes, zero unlabelled buttons, and zero browser errors. The Playwright Axe integration passes with zero serious/critical violations on `/`, `/demo/`, `/privacy/`, and `/terms/` at desktop and 390px. Evidence and screenshots are under `.factory/evidence/polish-1-local/` and `.factory/evidence/polish-1-demo/`.
+## Deployment and cold production verification
 
-## Production deployment and cold verification
+- Work-order build: `npm ci && npm run build:site`
+- Deployment command: `/opt/fleet/lib/deploy-static.sh agent-secret-capsule dist/site`
+- Deployment id: `13603aa0-fc26-4a4b-9f13-23e6cecd15b8`
+- Live URL: <https://agent-secret-capsule.sociobot.in/>
 
-- Commit deployed: `0a93e390baa6df87a54567388e08fe6039606441`
-- Deployment: `924afb99-5623-4294-a57d-6e8cf0bf7394` via
-  `/opt/fleet/lib/deploy-static.sh agent-secret-capsule dist/site`
-- Live URL: `https://agent-secret-capsule.sociobot.in/`
-- Cold live `verify-url.sh` passed for `/` and `/demo/`; no console errors.
-- Live HTTP checks: `/`, `/demo/`, `/privacy/`, `/terms/`, `/robots.txt`,
-  `/sitemap.xml`, and `/favicon.svg` return 200 with the expected content
-  types. `/not-a-real-route` returns 404.
-- A fresh 390px live browser context opened `?demo=1`, landed on `/demo/`,
-  showed the banner, wrote only `demo:asc:run-count`, reset it to no storage,
-  and made 13 same-origin requests. Screenshot:
-  `.factory/evidence/polish-1-live-demo/cold-mobile.png`.
-- Live Lighthouse: **100 performance, 100 accessibility, 100 best practices,
-  100 SEO**; LCP 1.5 s, CLS 0, transfer 127 KiB. Report:
-  `.factory/evidence/polish-1-live/lighthouse.json`.
+Cold `verify-url.sh` checks passed on `/`, `/demo/`, `/privacy/`, and `/terms/`
+with no console errors. A separate cold Chromium pass confirmed:
 
-## Run and publish
+- desktop audience bottom 671 px and CTA bottom 750 px in a 900 px viewport;
+- `?demo=1` enters the populated demo with the persistent banner;
+- Reset and Start for real both clear demo state;
+- the 390 px demo has no horizontal overflow and its two banner controls are
+  169×44 px;
+- all demo requests are same-origin and no cookies are created;
+- Privacy → Terms → Back restores focus to the Privacy h1;
+- `/not-a-real-route` returns HTTP 404 with every required Open Graph/Twitter
+  field;
+- all eight crawled internal/external links return 200;
+- live Axe has zero serious/critical violations on all five pages at desktop
+  and mobile.
+
+Production artifacts exactly match the local build:
+
+| Artifact | SHA-256 |
+| --- | --- |
+| `index.html` | `790da589de22f46966e9f1e76ebcdbc86c08d30daf376e03e9d3d619f96199bf` |
+| `assets/main-CO5TDLdx.js` | `c5f8a11c725252e47c1a84235497e9932d937a1eb8d10f396e46a170684b006c` |
+| `assets/style-Dbw9iziQ.css` | `a2ad37de5da808b748050c180016980a987dbd61502e05f53e88559995d03d77` |
+
+Live mobile Lighthouse scored **100 performance, 100 accessibility, 100 best
+practices, and 100 SEO**. FCP was 0.9 s, LCP 1.5 s, speed index 1.0 s, TBT
+10 ms, and CLS 0. The built site ships 3.1 KiB total JavaScript, 12.8 KiB CSS,
+36.1 KiB fonts, and an 84.7 KiB mobile hero image.
+
+Production evidence is under `.factory/evidence/polish-2-live*/`, including the
+exact first-screen screenshot, direct-query mobile demo, designed 404, route
+verifier reports, live Axe/link report, cold browser report, and Lighthouse
+JSON.
+
+## Run and package
 
 ```sh
 npm ci
@@ -76,8 +116,8 @@ npm run build
 cargo package -p agent-secret-capsule --allow-dirty
 ```
 
-The factory owns registry publishing. The ready-to-publish command is `cargo package -p agent-secret-capsule --allow-dirty`.
+The factory owns registry publishing; do not publish from this checkout.
 
 ## Known gaps
 
-None. The optional paid tier was deliberately removed because its configured checkout returned 404; no unavailable purchase flow is exposed.
+None.

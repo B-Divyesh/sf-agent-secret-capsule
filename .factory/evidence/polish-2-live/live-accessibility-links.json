@@ -1,0 +1,119 @@
+{
+  "checkedAt": "2026-08-28T18:44:32.594Z",
+  "results": [
+    {
+      "viewport": "desktop",
+      "route": "/",
+      "status": 200,
+      "title": "Agent Secret Capsule — give one command a credential",
+      "seriousCritical": 0,
+      "unexpectedErrors": []
+    },
+    {
+      "viewport": "desktop",
+      "route": "/demo/",
+      "status": 200,
+      "title": "Demo — Agent Secret Capsule",
+      "seriousCritical": 0,
+      "unexpectedErrors": []
+    },
+    {
+      "viewport": "desktop",
+      "route": "/privacy/",
+      "status": 200,
+      "title": "Privacy — Agent Secret Capsule",
+      "seriousCritical": 0,
+      "unexpectedErrors": []
+    },
+    {
+      "viewport": "desktop",
+      "route": "/terms/",
+      "status": 200,
+      "title": "Terms — Agent Secret Capsule",
+      "seriousCritical": 0,
+      "unexpectedErrors": []
+    },
+    {
+      "viewport": "desktop",
+      "route": "/not-a-real-route",
+      "status": 404,
+      "title": "Page not found — Agent Secret Capsule",
+      "seriousCritical": 0,
+      "unexpectedErrors": []
+    },
+    {
+      "viewport": "mobile",
+      "route": "/",
+      "status": 200,
+      "title": "Agent Secret Capsule — give one command a credential",
+      "seriousCritical": 0,
+      "unexpectedErrors": []
+    },
+    {
+      "viewport": "mobile",
+      "route": "/demo/",
+      "status": 200,
+      "title": "Demo — Agent Secret Capsule",
+      "seriousCritical": 0,
+      "unexpectedErrors": []
+    },
+    {
+      "viewport": "mobile",
+      "route": "/privacy/",
+      "status": 200,
+      "title": "Privacy — Agent Secret Capsule",
+      "seriousCritical": 0,
+      "unexpectedErrors": []
+    },
+    {
+      "viewport": "mobile",
+      "route": "/terms/",
+      "status": 200,
+      "title": "Terms — Agent Secret Capsule",
+      "seriousCritical": 0,
+      "unexpectedErrors": []
+    },
+    {
+      "viewport": "mobile",
+      "route": "/not-a-real-route",
+      "status": 404,
+      "title": "Page not found — Agent Secret Capsule",
+      "seriousCritical": 0,
+      "unexpectedErrors": []
+    }
+  ],
+  "links": [
+    {
+      "href": "https://agent-secret-capsule.sociobot.in/",
+      "status": 200
+    },
+    {
+      "href": "https://agent-secret-capsule.sociobot.in/#how",
+      "status": 200
+    },
+    {
+      "href": "https://agent-secret-capsule.sociobot.in/#install",
+      "status": 200
+    },
+    {
+      "href": "https://agent-secret-capsule.sociobot.in/demo/",
+      "status": 200
+    },
+    {
+      "href": "https://agent-secret-capsule.sociobot.in/privacy/",
+      "status": 200
+    },
+    {
+      "href": "https://agent-secret-capsule.sociobot.in/terms/",
+      "status": 200
+    },
+    {
+      "href": "https://github.com/B-Divyesh/sf-agent-secret-capsule",
+      "status": 200
+    },
+    {
+      "href": "https://github.com/B-Divyesh/sf-agent-secret-capsule#usage",
+      "status": 200
+    }
+  ]
+}
