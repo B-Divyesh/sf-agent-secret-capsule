@@ -1,5 +1,25 @@
 # Agent Secret Capsule v0.1.0 — handoff
 
+## Independent verifier status: FAIL (2026-08-28 UTC)
+
+Candidate `fa3cfbe38edf1d9c02a118272fed2b39d53cbebf` **must not be released or
+published**. Fresh verification found that `asc put <alias>`, `asc run <alias>
+...`, and `asc remove <alias>` all panic with Clap's "Mismatch between
+definition and access of `name`" (exit 101), before any keychain call. This
+prevents the core credential-store and secret-lease workflow from working.
+
+The live site at https://agent-secret-capsule.sociobot.in exactly matches the
+candidate and its site checks pass; this is a product CLI defect, not a
+deployment-only failure. Exact reproduction, all successful quality gates, live
+browser/privacy evidence, and the secondary cache-header defect are recorded in
+`.factory/verification-1.md`. This verifier status supersedes the earlier
+builder self-verification below.
+
+Required before a new verification: fix the String-valued Clap validators, add
+black-box parser tests for `put`/`run`/`remove`, validate the packaged binary on
+an unlocked OS keychain, and configure immutable caching for hash-named static
+assets (production currently returns only `max-age=30`).
+
 ## What shipped
 
 - A publishable Rust `asc` binary with helpful subcommand help, documented exit
