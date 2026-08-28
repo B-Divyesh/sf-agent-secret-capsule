@@ -327,6 +327,7 @@ mod tests {
     use super::*;
 
     #[test]
+    // @claim:redaction-forms
     fn redacts_raw_and_encoded_forms() {
         let secret = "tok_en+value/42";
         let text = format!(
@@ -357,17 +358,42 @@ mod tests {
         let request = LeaseRequest {
             secret_name: "example".into(),
             env_name: "TOKEN".into(),
-            command: vec!["sh".into(), "-c".into(), "printf '%s' \"$TOKEN\"".into()],
+            command: vec![
+                "sh".into(),
+                "-c".into(),
+                "printf '%s' \"$TOKEN\"; printf '%s' \"$TOKEN\" >&2".into(),
+            ],
             ttl: Duration::from_secs(2),
         };
         let result = run_lease(&request, secret).unwrap();
         assert_eq!(result.stdout, REDACTION);
-        assert_eq!(result.receipt.redactions, 1);
+        assert_eq!(result.stderr, REDACTION);
+        assert_eq!(result.receipt.redactions, 2);
         assert!(
             !serde_json::to_string(&result.receipt)
                 .unwrap()
                 .contains(secret)
         );
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn selected_process_children_inherit_the_credential_and_are_redacted() {
+        let secret = "capsule-example-987";
+        let request = LeaseRequest {
+            secret_name: "example".into(),
+            env_name: "TOKEN".into(),
+            command: vec![
+                "sh".into(),
+                "-c".into(),
+                "(printf 'child=%s' \"$TOKEN\") & wait; printf 'parent=%s' \"$TOKEN\" >&2".into(),
+            ],
+            ttl: Duration::from_secs(2),
+        };
+        let result = run_lease(&request, secret).unwrap();
+        assert_eq!(result.stdout, format!("child={REDACTION}"));
+        assert_eq!(result.stderr, format!("parent={REDACTION}"));
+        assert_eq!(result.receipt.redactions, 2);
     }
 
     #[test]

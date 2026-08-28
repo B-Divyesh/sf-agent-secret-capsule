@@ -75,6 +75,11 @@ enum Commands {
     },
     /// Report local capability and storage paths without reading any secret
     Doctor,
+    /// Run bundled sample data in a new temporary directory (never uses your keychain)
+    #[command(
+        after_help = "EXAMPLE:\n  asc demo\n\nThe demo creates a new temporary directory for its receipts and removes no real ASC data."
+    )]
+    Demo,
 }
 
 fn parse_limit(value: &str) -> Result<usize, String> {
@@ -358,6 +363,73 @@ fn command_doctor(root: &Path, json: bool) -> Result<(), String> {
     }
 }
 
+fn demo_root() -> PathBuf {
+    let nonce = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_nanos();
+    std::env::temp_dir().join(format!("asc-demo-{}-{nonce}", std::process::id()))
+}
+
+/// Exercise the same lease/redaction/receipt code as `asc run`, but with a
+/// bundled fake credential and a new temporary receipt directory.  It never
+/// reads the OS keychain or ASC_HOME.
+fn command_demo(json: bool) -> Result<(), String> {
+    let root = demo_root();
+    ensure_private_dir(&root)?;
+    let secret = "demo_credential_7Kp9mQ2x";
+    let success = LeaseRequest {
+        secret_name: "demo-api".into(),
+        env_name: "ASC_DEMO_TOKEN".into(),
+        command: vec![
+            "sh".into(),
+            "-c".into(),
+            "printf 'stdout credential=%s\\n' \"$ASC_DEMO_TOKEN\"; printf 'stderr credential=%s\\n' \"$ASC_DEMO_TOKEN\" >&2".into(),
+        ],
+        ttl: Duration::from_secs(2),
+    };
+    let success_result = run_lease(&success, secret)?;
+    append_receipt(&root, &success_result.receipt)?;
+    let expiry = LeaseRequest {
+        secret_name: "demo-api".into(),
+        env_name: "ASC_DEMO_TOKEN".into(),
+        command: vec!["sh".into(), "-c".into(), "sleep 1".into()],
+        ttl: Duration::from_millis(30),
+    };
+    let expiry_result = run_lease(&expiry, secret)?;
+    append_receipt(&root, &expiry_result.receipt)?;
+    fs::write(
+        root.join("README.txt"),
+        "Agent Secret Capsule demo data. This directory contains only fake sample receipts. Delete this directory to reset the command-line demo.\n",
+    )
+    .map_err(|error| format!("could not write demo note: {error}"))?;
+
+    if json {
+        println!(
+            "{}",
+            serde_json::json!({
+                "ok": true,
+                "demo": true,
+                "directory": root,
+                "stdout": success_result.stdout,
+                "stderr": success_result.stderr,
+                "receipts": [success_result.receipt, expiry_result.receipt]
+            })
+        );
+    } else {
+        print!("{}", success_result.stdout);
+        eprint!("{}", success_result.stderr);
+        println!("Demo complete. Sample receipts: {}", root.display());
+        println!(
+            "The fake credential was redacted before output. A second sample lease expired after 30ms."
+        );
+        println!(
+            "Delete that directory to reset this command-line demo. Your keychain and ASC_HOME were not used."
+        );
+    }
+    Ok(())
+}
+
 fn command_run(
     name: String,
     env: String,
@@ -422,6 +494,7 @@ fn run(cli: Cli) -> Result<u8, String> {
         Commands::Remove { name } => command_remove(name, &root, cli.json).map(|_| 0),
         Commands::Receipts { limit } => command_receipts(&root, limit, cli.json).map(|_| 0),
         Commands::Doctor => command_doctor(&root, cli.json).map(|_| 0),
+        Commands::Demo => command_demo(cli.json).map(|_| 0),
     }
 }
 

@@ -1,0 +1,8 @@
+# Bundled Agent Secret Capsule sample
+
+Run `asc demo` to exercise this sample workflow with a fake credential. The
+binary writes the raw fake value to both captured streams, redacts both values,
+records a successful no-value receipt, and records one expired sample lease.
+
+The fake credential is intentionally not stored in this file. `asc demo`
+creates a fresh temporary directory and prints its location.

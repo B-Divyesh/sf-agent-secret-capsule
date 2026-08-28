@@ -2,6 +2,7 @@ import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  appType: 'mpa',
   root: resolve(import.meta.dirname),
   publicDir: resolve(import.meta.dirname, 'public'),
   build: {
@@ -12,6 +13,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(import.meta.dirname, 'index.html'),
+        notFound: resolve(import.meta.dirname, '404.html'),
+        demo: resolve(import.meta.dirname, 'demo/index.html'),
         privacy: resolve(import.meta.dirname, 'privacy/index.html'),
         terms: resolve(import.meta.dirname, 'terms/index.html')
       }

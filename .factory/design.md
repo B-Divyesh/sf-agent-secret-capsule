@@ -53,3 +53,7 @@ source prompt and deployment sidecar are retained beside the asset. The small
 capsule mark, arrows, and receipt diagram are hand-authored CSS/HTML geometric
 forms; they contain no third-party artwork.
 
+For polish 1, `capsule-social.webp` (1200×630) and `apple-touch-icon.png`
+(180×180) were composed by cropping the existing original capsule artwork with
+ImageMagick. They introduce no new artwork or text and preserve the concrete-
+and-moss visual language.

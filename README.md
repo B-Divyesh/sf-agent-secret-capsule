@@ -1,96 +1,87 @@
 # Agent Secret Capsule
 
-Agent Secret Capsule (`asc`) lets a coding or browser agent run one named
-command with one selected credential without putting the raw value in a prompt,
-shell history, captured stdout/stderr, or the audit receipt. Secrets stay in the
-operating-system keychain. There is no telemetry and no hosted secret store.
+Agent Secret Capsule (`asc`) gives one selected process and its children a
+temporary credential. It captures command output before printing it. It writes
+a receipt without the credential value.
 
-This is for developers who need an agent to make an authorized API call but do
-not want to hand the credential to the agent's conversational context. It is a
-containment layer, not a sandbox or a secret-manager replacement.
+For developers whose coding agents need an authorized API call. Use a local
+alias in the agent tool input.
+
+## Try the sample
+
+Run the bundled sample before storing a real credential:
+
+```sh
+cargo run -p agent-secret-capsule -- demo
+```
+
+The command uses a fake credential. It creates a new temporary directory with
+sample no-value receipts and prints its path. It does not read your keychain or
+`ASC_HOME`. Delete that directory to reset the command-line sample.
+
+The web sample is at `/demo/` or `/?demo=1`. It uses browser storage keys with
+the `demo:asc` prefix. Reset demo clears those sample keys.
 
 ## Install
 
-Build the single binary with Rust 1.85 or newer:
+Build with Rust 1.85 or newer:
 
 ```sh
 cargo install --path crates/asc
 asc doctor
 ```
 
-Factory releases will provide checksummed binaries for macOS and Linux. The
-repository is ready for `cargo package -p agent-secret-capsule`; publishing is
-performed by the factory, not from a development checkout.
-
 ## Usage
 
-Store a credential without placing it in shell history:
+Store a credential from standard input:
 
 ```sh
 printf '%s' "$CLOUDFLARE_API_TOKEN" | asc put cloudflare --stdin
 ```
 
-Run exactly one program with a 30-second lease. `asc` captures both output
-streams, removes the raw secret and common exact encodings, then preserves the
-program's exit status:
+Run a selected process tree with a 30-second time limit:
 
 ```sh
 asc run cloudflare --env CLOUDFLARE_API_TOKEN --ttl 30s -- \
   curl --fail --silent https://api.cloudflare.com/client/v4/user/tokens/verify
 ```
 
-Inspect no-value receipts or automate with JSON:
+Inspect receipts or automate with JSON:
 
 ```sh
 asc receipts
 asc receipts --json
 asc list --json
-```
-
-Remove a credential:
-
-```sh
 asc remove cloudflare
 ```
 
 Run `asc --help` or `asc <command> --help` for flags, exit codes, and examples.
-There are no interactive prompts when stdin is not a terminal; `put` requires
-`--stdin` in CI.
+When standard input is not a terminal, `put` requires `--stdin`.
 
-## Security boundary
+## Security limits
 
-`asc` injects the secret only into the selected process environment and its
-descendants, removes it when that process tree exits, enforces a lease timeout,
-and redacts the exact raw, percent-encoded, base64, base64url, and hex values
-from captured output. It never writes secret values to receipts.
+ASC gives the credential to the selected process and its children until exit or
+the time limit. It redacts raw, percent-encoded, Base64, Base64url, and hex
+matches from captured stdout and stderr. A no-value receipt omits the
+credential value.
 
-An authorized process can still send the credential—or data derived from it—to
-the network, write it to a file, transform it into an encoding this version does
-not recognize, or pass it to a child. Review the command and its network scope.
-For hostile code, use a separate sandbox as well.
+This is not a sandbox. An authorized process can send a credential over the
+network, write it to a file, transform it, or pass it to a child. Review the
+exact command and endpoint. Use a separate sandbox for hostile code.
 
 ## Develop and verify
 
 ```sh
-npm install
+npm ci
 npm test
 npm run build
-npm run build:site   # landing site only -> dist/site
 cargo package -p agent-secret-capsule --allow-dirty
 ```
 
-`npm test` runs Rust tests, site unit checks, and Playwright accessibility and
-browser tests. The static site has no runtime CDN, tracking, or account system.
-License tokens entered on the pricing panel stay in browser `localStorage` and
-are sent only to the Sociobot license verification endpoint.
-
-## Repository layout
-
-- `crates/asc` — Rust CLI and library
-- `site` — dependency-light Vite landing/docs site
-- `.factory/design.md` — product-specific visual system and asset provenance
-- `.factory/handoff.md` — verification and release handoff
+`npm test` runs Rust tests, site unit checks, and browser checks. Claim tests
+are listed in `.factory/claims.json`. Build the static site with
+`npm run build:site`; it writes `dist/site` for deployment.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+[MIT](LICENSE).

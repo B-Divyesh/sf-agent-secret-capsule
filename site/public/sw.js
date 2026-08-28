@@ -1,6 +1,7 @@
-const CACHE = 'asc-shell-v1';
+const CACHE = 'asc-shell-v2';
 const SHELL = [
   '/',
+  '/demo/',
   '/privacy/',
   '/terms/',
   '/assets/fonts/dejavu-sans-mono.woff2',

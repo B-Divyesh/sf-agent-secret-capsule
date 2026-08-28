@@ -1,48 +1,51 @@
-# Agent Secret Capsule — adversarial review 1 handoff
+# Agent Secret Capsule — polish 1 handoff
 
-## Outcome
+## Delivered
 
-Review 1 is complete with a **FAIL** verdict. The full evidence and proposed fixes are
-in `.factory/review-1.md`. No product code was modified.
+- Repaired every B1–B6 and M1–M4 item in `.factory/review-1.md`; the detailed finding map is `.factory/polish-1.md`.
+- Added a one-click `/demo/` sandbox, `?demo=1` entry, persistent banner, reset/start controls, separate `demo:asc:` browser storage, and documented reset behavior.
+- Added the actual `asc demo` command. It uses fake bundled data, calls the production lease/redaction/receipt code, creates a fresh temporary directory, and does not read `ASC_HOME` or the OS keychain.
+- Rewrote first-screen and README copy, removed unavailable billing, and added claim inventory/tests, static route metadata, designed 404, discovery assets, legal skeleton, focus management, mobile targets, and derived social assets.
 
-Blocking findings:
+## Verification
 
-1. The cold first screen does not name the intended user or expose a sample-data action.
-2. No required `/demo` or `asc demo` sandbox exists.
-3. `.factory/claims.json` and `@claim:` tests are absent; all public claims are unlisted.
-4. “Only the named process receives it” contradicts child-process inheritance.
-5. “Buy a supporter license” leads to an HTTP 404.
-6. Unknown routes and missing discovery assets soft-404 to the home page.
+From this checkout:
 
-## Verification performed
+```text
+npm ci                                                        PASS (60 packages, 0 vulnerabilities)
+npm test                                                      PASS (10 Rust, 2 Vitest, 21 Playwright; 3 mobile-only skips)
+npm run build                                                 PASS (target/release/asc and dist/site)
+cargo fmt --check                                             PASS
+cargo clippy --workspace --all-targets --locked -- -D warnings PASS
+cargo package -p agent-secret-capsule --allow-dirty            PASS (8 files, 87.8 KiB unpacked / 24.4 KiB compressed)
+```
 
-- Opened the live site in fresh Chromium contexts at 390×844 and 1440×900.
-- Captured and inspected the unscrolled first screens.
-- Audited every landing-page and README sentence with word counts.
-- Exercised `/?demo=1`, `/demo`, the browser illustration, storage, network requests,
-  reset/start controls, and an offline reload.
-- Ran `asc demo` with `ASC_HOME` pointed at a fresh temporary directory; it exited 2
-  because no demo subcommand exists.
-- Created a clean detached worktree at `c9ee1997b8343876ccb2ba86d109e87a275b2008`,
-  ran `npm ci`, and ran `npm test`: 9 Rust, 5 Vitest, and 14 Playwright tests passed.
-- Ran `npm run build` in the handoff tree; it produced `target/release/asc` and
-  `dist/site` successfully.
-- Confirmed the clean worktree lacks `.factory/claims.json` and `@claim:` tags.
-- Ran `/opt/fleet/lib/verify-url.sh`; its basic semantic/console checks passed.
-- Used the existing Playwright axe integration; zero serious/critical violations were
-  reported for Home, Privacy, and Terms at desktop and mobile widths.
-- Crawled every rendered link. Internal/GitHub links returned 200; checkout returned 404.
-- Checked titles, descriptions, canonicals, social tags, icons, robots, sitemap, 404,
-  route focus, back navigation, touch targets, and visual identity.
+Every command in `.factory/claims.json` was run independently and passed:
 
-## Files changed
+```text
+@claim:demo-isolation              PASS
+@claim:offline-reload              PASS
+@claim:cli-demo                    PASS
+@claim:redaction-forms             PASS
+@claim:process-tree                PASS
+@claim:captured-output-receipt     PASS
+```
 
-- `.factory/review-1.md` — adversarial findings, complete copy/claim audit, evidence,
-  and concrete fixes.
-- `.factory/handoff.md` — this review handoff.
+`verify-url.sh` passed for local `/` and `/demo/`: each report has a title, `lang=en`, one h1, main landmark, zero missing image alt attributes, zero unlabelled buttons, and zero browser errors. The Playwright Axe integration passes with zero serious/critical violations on `/`, `/demo/`, `/privacy/`, and `/terms/` at desktop and 390px. Evidence and screenshots are under `.factory/evidence/polish-1-local/` and `.factory/evidence/polish-1-demo/`.
 
-## Next steps
+Production deployment and cold live verification are appended below after the commit is pushed and `deploy-static.sh` completes.
 
-Resolve all six blocking findings before another acceptance review. The next reviewer
-should start from a fresh context and verify the new sample path before relying on any
-ordinary unit or browser test result.
+## Run and publish
+
+```sh
+npm ci
+npm test
+npm run build
+cargo package -p agent-secret-capsule --allow-dirty
+```
+
+The factory owns registry publishing. The ready-to-publish command is `cargo package -p agent-secret-capsule --allow-dirty`.
+
+## Known gaps
+
+None. The optional paid tier was deliberately removed because its configured checkout returned 404; no unavailable purchase flow is exposed.

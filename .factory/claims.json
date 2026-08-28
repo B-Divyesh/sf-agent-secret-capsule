@@ -1,0 +1,44 @@
+[
+  {
+    "id": "demo-isolation",
+    "claim": "The web sample uses separate fake-data storage and Reset demo removes it.",
+    "where": "landing facts, /demo, README, privacy policy",
+    "test": "npm run test:claim -- --grep @claim:demo-isolation",
+    "sandbox": "fresh browser context opens ?demo=1, runs sample, checks storage and reset"
+  },
+  {
+    "id": "offline-reload",
+    "claim": "The sample page works offline after the first visit.",
+    "where": "/demo",
+    "test": "npm run test:claim -- --grep @claim:offline-reload",
+    "sandbox": "fresh browser context loads demo, waits for service worker, then reloads offline"
+  },
+  {
+    "id": "cli-demo",
+    "claim": "asc demo creates redacted no-value sample receipts without reading ASC_HOME.",
+    "where": "landing sample section, README, .factory/demo.md",
+    "test": "npm run test:claim -- --grep @claim:cli-demo",
+    "sandbox": "built CLI with a sentinel ASC_HOME runs demo; test reads the temporary receipt log"
+  },
+  {
+    "id": "redaction-forms",
+    "claim": "ASC redacts raw, percent-encoded, Base64, Base64url, and hex credential forms from captured output.",
+    "where": "README security limits",
+    "test": "cargo test --locked redacts_raw_and_encoded_forms",
+    "sandbox": "library lease/redaction fixture emits every listed form and asserts no configured value remains"
+  },
+  {
+    "id": "process-tree",
+    "claim": "The selected process and its children receive the credential until exit or the time limit.",
+    "where": "landing How it works, README security limits",
+    "test": "npm run test:claim -- --grep @claim:process-tree",
+    "sandbox": "the CLI lease fixture starts a shell child, asserts inherited output is redacted, then asserts expiry stops a lease"
+  },
+  {
+    "id": "captured-output-receipt",
+    "claim": "ASC captures both output streams and a no-value receipt omits the credential.",
+    "where": "landing How it works, README security limits",
+    "test": "npm run test:claim -- --grep @claim:captured-output-receipt",
+    "sandbox": "the CLI lease fixture prints the value to stdout and stderr and serializes the receipt"
+  }
+]
