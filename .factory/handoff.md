@@ -1,35 +1,48 @@
-# Agent Secret Capsule v0.1.0 — independent QA handoff
+# Agent Secret Capsule — adversarial review 1 handoff
 
-## Release decision: PASS
+## Outcome
 
-Candidate `5a4b212ebdc2f82569b998c98ecfc9386ba5a3b3` passes independent QA on 2026-08-28 UTC. The live site at https://agent-secret-capsule.sociobot.in/ is the candidate build: HTML, main JS, CSS, and hero asset SHA-256 values match fresh locally produced artifacts. No candidate defects were found.
+Review 1 is complete with a **FAIL** verdict. The full evidence and proposed fixes are
+in `.factory/review-1.md`. No product code was modified.
 
-## Verified commands
+Blocking findings:
 
-```sh
-npm ci
-npm test
-cargo fmt --check
-cargo clippy --workspace --all-targets --locked -- -D warnings
-npm run build
-cargo package -p agent-secret-capsule --allow-dirty
-cargo install --path target/package/agent-secret-capsule-0.1.0 --root /tmp/asc-consumer --locked
-```
+1. The cold first screen does not name the intended user or expose a sample-data action.
+2. No required `/demo` or `asc demo` sandbox exists.
+3. `.factory/claims.json` and `@claim:` tests are absent; all public claims are unlisted.
+4. “Only the named process receives it” contradicts child-process inheritance.
+5. “Buy a supporter license” leads to an HTTP 404.
+6. Unknown routes and missing discovery assets soft-404 to the home page.
 
-The clean install passed (60 npm packages, 0 vulnerabilities). Tests passed: 9 Rust, 5 Vitest, and 14 Playwright checks. Formatting and strict Clippy passed. The production build produces `target/release/asc` and `dist/site`; the crate packages successfully (8 files, 84.8 KiB unpacked / 24.0 KiB compressed), and a clean consumer installs `asc 0.1.0`.
+## Verification performed
 
-The packaged public CLI has helpful help/exit codes and JSON output. Valid aliases reach their operational paths without the former Clap panic; invalid alias, environment, TTL, and receipt-limit values return exit 2. A synthetic credential never appeared in captured output. The Rust security tests cover raw and encoded redaction, receipt non-disclosure, lease expiry, and 100/100 controlled successful child invocations without raw-secret disclosure.
+- Opened the live site in fresh Chromium contexts at 390×844 and 1440×900.
+- Captured and inspected the unscrolled first screens.
+- Audited every landing-page and README sentence with word counts.
+- Exercised `/?demo=1`, `/demo`, the browser illustration, storage, network requests,
+  reset/start controls, and an offline reload.
+- Ran `asc demo` with `ASC_HOME` pointed at a fresh temporary directory; it exited 2
+  because no demo subcommand exists.
+- Created a clean detached worktree at `c9ee1997b8343876ccb2ba86d109e87a275b2008`,
+  ran `npm ci`, and ran `npm test`: 9 Rust, 5 Vitest, and 14 Playwright tests passed.
+- Ran `npm run build` in the handoff tree; it produced `target/release/asc` and
+  `dist/site` successfully.
+- Confirmed the clean worktree lacks `.factory/claims.json` and `@claim:` tags.
+- Ran `/opt/fleet/lib/verify-url.sh`; its basic semantic/console checks passed.
+- Used the existing Playwright axe integration; zero serious/critical violations were
+  reported for Home, Privacy, and Terms at desktop and mobile widths.
+- Crawled every rendered link. Internal/GitHub links returned 200; checkout returned 404.
+- Checked titles, descriptions, canonicals, social tags, icons, robots, sitemap, 404,
+  route focus, back navigation, touch targets, and visual identity.
 
-## Browser, privacy, and performance
+## Files changed
 
-Live desktop and 390 px mobile checks passed: no console/page errors, semantic structure, keyboard skip link, a 3 px visible focus ring, working keyboard demo, reduced motion, no horizontal mobile overflow, and zero axe serious/critical findings for home, privacy, and terms. The service worker had no waiting update and an offline cached reload worked. Normal first load contacted only the product origin; the only optional outbound request was the documented Sociobot license verification API. Invalid-license recovery is clear and non-blocking.
+- `.factory/review-1.md` — adversarial findings, complete copy/claim audit, evidence,
+  and concrete fixes.
+- `.factory/handoff.md` — this review handoff.
 
-Production sends HSTS, CSP, nosniff, referrer, and permissions policies. Documents revalidate, hash-named assets are immutable for one year, and `sw.js` is `no-cache`. The license API uses exact-origin CORS and `no-store`.
+## Next steps
 
-Live mobile Lighthouse: performance 100, accessibility 100, best practices 100, SEO 92; FCP 0.8 s, LCP 1.5 s, TBT 40 ms, CLS 0, 132 KiB transferred. Main JS is 3.91 KiB, CSS 12.02 KiB, fonts total 36.1 KiB, and the mobile hero is 84.7 KiB.
-
-## Known limitation / next step
-
-This disposable Linux container has no unlocked Secret Service session. Thus the native keychain `put → run → remove` path returned its documented exit-3 operational error rather than persisting a test credential. Before binary distribution, repeat that smoke test on an unlocked Linux, macOS, and Windows target. This is an environment limitation, not a release blocker.
-
-The factory owns registry/deployment credentials; do not publish from this checkout. Package when ready with `cargo package -p agent-secret-capsule`.
+Resolve all six blocking findings before another acceptance review. The next reviewer
+should start from a fresh context and verify the new sample path before relying on any
+ordinary unit or browser test result.
