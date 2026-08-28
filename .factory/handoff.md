@@ -1,4 +1,20 @@
-# Agent Secret Capsule — polish 1 handoff
+# Agent Secret Capsule — review 2 handoff
+
+## Review 2 outcome
+
+No product code was changed. \`.factory/review-2.md\` records a **FAIL** at
+\`0f4225b\`: the desktop first screen hides its audience copy and sample CTA, and
+several public claims are missing claims-manifest coverage. It also records a
+23-word README warning/lease jargon and missing 404 social metadata.
+
+From a fresh GitHub clone: \`npm ci\`, \`npm test\`, and all six listed claim
+commands passed. The reviewer also ran \`asc --json demo\` from a new temp
+directory with a sentinel \`ASC_HOME\`; it generated separate redacted no-value
+receipts and left the sentinel empty. Live mobile/desktop browser checks covered
+the demo sandbox/reset/storage/request log, routes, link crawl, Back focus, and
+console errors. See \`.factory/review-2.md\` for evidence and exact fixes.
+
+## Earlier polish handoff
 
 ## Delivered
 
