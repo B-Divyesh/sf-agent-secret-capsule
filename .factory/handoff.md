@@ -1,75 +1,67 @@
-# Agent Secret Capsule v0.1.0 — handoff
+# Agent Secret Capsule v0.1.0 — repair handoff
 
-## Independent verifier status: FAIL (2026-08-28 UTC)
+## Repair status
 
-Candidate `fa3cfbe38edf1d9c02a118272fed2b39d53cbebf` **must not be released or
-published**. Fresh verification found that `asc put <alias>`, `asc run <alias>
-...`, and `asc remove <alias>` all panic with Clap's "Mismatch between
-definition and access of `name`" (exit 101), before any keychain call. This
-prevents the core credential-store and secret-lease workflow from working.
+The release-blocking independent-verification finding against candidate
+`fa3cfbe38edf1d9c02a118272fed2b39d53cbebf` is repaired. The original product
+shape remains a Rust single-binary CLI plus static Vite landing/docs site.
 
-The live site at https://agent-secret-capsule.sociobot.in exactly matches the
-candidate and its site checks pass; this is a product CLI defect, not a
-deployment-only failure. Exact reproduction, all successful quality gates, live
-browser/privacy evidence, and the secondary cache-header defect are recorded in
-`.factory/verification-1.md`. This verifier status supersedes the earlier
-builder self-verification below.
+## What changed
 
-Required before a new verification: fix the String-valued Clap validators, add
-black-box parser tests for `put`/`run`/`remove`, validate the packaged binary on
-an unlocked OS keychain, and configure immutable caching for hash-named static
-assets (production currently returns only `max-age=30`).
+- Fixed the Clap parser contract for `put <name>`, `run <name> --env <NAME>`,
+  and `remove <name>`: the value parsers now validate and return the parsed
+  `String`, rather than returning `()`, which caused Clap to panic while
+  downcasting to a derived `String` field.
+- Added package-included black-box tests at `crates/asc/tests/cli_parser.rs`.
+  They invoke Cargo's compiled `asc` binary for valid `put`, `run`, and
+  `remove` JSON paths, assert valid JSON and absence of panics/secret output,
+  and verify invalid aliases and environment names produce exit 2 usage errors.
+- Set the Static Web Apps response policy so documents revalidate while
+  `/assets/*` receives `Cache-Control: public, max-age=31536000, immutable`.
+  `sw.js` is explicitly `no-cache`, so offline clients promptly discover a new
+  deployment. Unit coverage locks in both rules.
+- Added desktop and 390×844 Playwright coverage for service-worker update state
+  and a cached offline reload, in addition to the existing keyboard, semantic,
+  reduced-motion, privacy-demo, and Axe checks.
 
-## What shipped
+## Exact verification evidence
 
-- A publishable Rust `asc` binary with helpful subcommand help, documented exit
-  codes, and global `--json` output.
-- Named secret storage in macOS Keychain, Linux Secret Service, and Windows
-  Credential Manager; secret input is hidden interactively or explicit via
-  `--stdin`, so values do not enter shell history.
-- A single-command lease that adds one selected environment variable, captures
-  stdout/stderr before release, redacts exact raw/URL/base64/base64url/hex forms,
-  preserves the subprocess exit code, and enforces a maximum 60-minute TTL.
-- Lease expiry terminates the isolated Unix process group or Windows process
-  tree, covering ordinary descendants that inherited the environment.
-- Local JSONL receipts containing only time, alias, environment name,
-  executable name, duration, outcome, exit code, TTL, and redaction count.
-- Empty states and actionable errors for aliases, receipts, invalid input,
-  unavailable keychains, command launch, and lease expiry.
-- A Vite landing/docs site in `dist/site` with an original concrete-and-moss
-  visual system, interactive safe fake-secret demo, responsive 390px layout,
-  keyboard path, reduced-motion treatment, offline shell, privacy and terms.
-- $19 one-time Sociobot supporter license flow: hosted checkout, return-token
-  capture, localStorage, daily cached verification, offline reconciliation,
-  paste-to-restore, revoked/invalid states, and an unlocked team rollout kit.
-  The core safety product remains free.
+All commands below ran successfully in the repair checkout on 2026-08-28 UTC.
 
-## Verification
+```sh
+npm ci
+npm test
+cargo fmt --check
+cargo clippy --workspace --all-targets --locked -- -D warnings
+npm run build
+cargo package -p agent-secret-capsule --allow-dirty
+cargo install --path target/package/agent-secret-capsule-0.1.0 \
+  --root /tmp/asc-consumer.dZ2xk6 --locked
+/tmp/asc-consumer.dZ2xk6/bin/asc --version
+```
 
-- `npm ci`: clean dependency install; `npm audit --audit-level=high`: 0 known
-  vulnerabilities.
-- `npm test`: passes 7 Rust tests, 3 site unit tests, and 12 Playwright tests
-  across desktop Chromium and a 390×844 Chromium viewport.
-- The controlled security test executes 100 credential-bearing subprocesses:
-  100/100 complete successfully and neither captured stream contains the raw
-  configured secret.
-- `cargo clippy --workspace --all-targets -- -D warnings`: passes.
-- `cargo package -p agent-secret-capsule`: packages and verifies successfully
-  (22.7 KiB compressed package). Registry publishing was not
-  attempted; the factory owns credentials.
-- `npm run build`: passes. It produces `target/release/asc` (3.2 MiB) and
-  `dist/site/index.html` plus the legal routes.
-- Production site payload: 3.91 KiB main JS, 12.02 KiB CSS, 37 KiB total fonts;
-  responsive hero images are 83 KiB and 187 KiB WebP.
-- Lighthouse 12.2.1 mobile: Performance 100, Accessibility 100, Best Practices
-  96, SEO 92; LCP 1.8 s, total blocking time 0 ms, CLS 0.
-- Factory `verify-url.sh`: HTTP 200, 532 ms network-idle load, one `<h1>`,
-  `lang=en`, main landmark, no missing image alt, no unlabeled buttons, and no
-  console/page errors.
-- Axe via Playwright: no serious or critical violations on product, privacy,
-  or terms pages in either viewport.
+- `npm ci` completed with 0 vulnerabilities. `npm test` passed 9 Rust tests
+  (including 2 binary-level parser regressions), 5 Vitest checks, and 14
+  Playwright checks across desktop and 390×844 mobile. Playwright's Axe scan
+  reported no serious or critical violations on `/`, `/privacy/`, or `/terms/`.
+- The controlled Rust security measure still completes 100/100 secret-bearing
+  child calls without placing the configured raw secret in either captured
+  stream.
+- `cargo fmt --check` and strict Clippy passed. `npm run build` produced
+  `target/release/asc` (3.2 MiB) and `dist/site`; the built site includes the
+  Static Web Apps response policy. Initial app JS is 3.91 KiB and CSS 12.02
+  KiB (both uncompressed), within the static-product budgets.
+- `cargo package` verified successfully: 8 files, 84.8 KiB unpacked and
+  24.1 KiB compressed. Its file list includes `tests/cli_parser.rs`. A clean
+  consumer install succeeded and the installed binary reported `asc 0.1.0`.
+- Direct release-binary reproduction with an isolated `ASC_HOME` returned
+  normal operational JSON errors (exit 3) for valid `put smoke --stdin`,
+  `run smoke --env TOKEN -- true`, and `remove smoke` because this worker has
+  no unlocked Linux Secret Service. `put bad/name --stdin` returned Clap's
+  normal usage error (exit 2). No output contained `panicked`, Clap's type
+  mismatch text, or the synthetic test secret.
 
-## Run and release
+## Run, package, and deploy
 
 ```sh
 npm ci
@@ -78,25 +70,24 @@ npm run build
 cargo package -p agent-secret-capsule
 ```
 
-Deploy the contents of `dist/site`. Publish the generated Cargo package or
-platform release binaries through factory-owned credentials.
+Deploy `dist/site` through the factory static deployment configuration:
 
-## Known gaps / factory next steps
+```sh
+/opt/fleet/lib/deploy-static.sh agent-secret-capsule dist/site
+```
 
-- This headless Linux worker has no unlocked desktop Secret Service session, so
-  keychain calls were compile-checked and failure-path checked; a release smoke
-  test should store/run/remove once on each target OS keychain.
-- The live paid product is registered later by the factory. Local/staging builds
-  deliberately use `pilot-api.sociobot.in`; the production hostname switches
-  automatically to `api.sociobot.in`.
-- Redaction is deliberately not presented as a sandbox. An authorized process
-  can still transmit a secret, write it, create an unknown transformation, or
-  escape its process group/session; this limitation is prominent in CLI help,
-  README, site, privacy, and terms.
+The factory owns registry credentials; do not publish from this checkout.
 
-## Original asset provenance
+## Known environment limitation
 
-The source image and exact prompt/deployment metadata are retained in
+This container has no unlocked desktop Secret Service session. The successful
+binary-level regression tests prove parser behavior and the unavailable-keychain
+error path, but a release smoke test on each target OS should still exercise
+the real keychain `put` → `run` → `remove` flow. The CLI and site have no
+telemetry; the documented license-token localStorage behavior is unchanged.
+
+## Asset provenance
+
+No visual asset changed in this repair. The original generated concrete/moss
+hero source, prompt, and factory deployment metadata remain in
 `.factory/assets/capsule-concrete-source.png` and its adjacent JSON sidecar.
-It was generated with `/opt/fleet/lib/gen-image.sh` using the factory image
-deployment, inspected, and converted locally to the two shipped WebP variants.

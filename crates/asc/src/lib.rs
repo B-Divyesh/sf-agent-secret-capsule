@@ -63,6 +63,15 @@ pub fn validate_secret_name(value: &str) -> Result<(), String> {
     Ok(())
 }
 
+/// Validate a secret alias while preserving the value for Clap's typed parser.
+///
+/// Clap stores the return value of a `value_parser`. Returning `()` here would
+/// make its derived `String` field fail a runtime downcast after validation.
+pub fn parse_secret_name(value: &str) -> Result<String, String> {
+    validate_secret_name(value)?;
+    Ok(value.to_owned())
+}
+
 pub fn validate_env_name(value: &str) -> Result<(), String> {
     let mut chars = value.chars();
     let Some(first) = chars.next() else {
@@ -74,6 +83,12 @@ pub fn validate_env_name(value: &str) -> Result<(), String> {
         return Err("environment variable must match [A-Za-z_][A-Za-z0-9_]*".into());
     }
     Ok(())
+}
+
+/// Validate an environment-variable name while preserving it for Clap.
+pub fn parse_env_name(value: &str) -> Result<String, String> {
+    validate_env_name(value)?;
+    Ok(value.to_owned())
 }
 
 pub fn parse_ttl(value: &str) -> Result<Duration, String> {

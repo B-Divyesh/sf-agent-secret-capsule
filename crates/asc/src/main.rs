@@ -1,6 +1,6 @@
 use agent_secret_capsule::{
-    LeaseRequest, Receipt, SERVICE, data_dir, ensure_private_dir, parse_ttl, run_lease,
-    validate_env_name, validate_secret_name,
+    LeaseRequest, Receipt, SERVICE, data_dir, ensure_private_dir, parse_env_name,
+    parse_secret_name, parse_ttl, run_lease,
 };
 use clap::{Parser, Subcommand};
 use serde::Serialize;
@@ -36,7 +36,7 @@ enum Commands {
     #[command(after_help = "EXAMPLE:\n  printf '%s' \"$TOKEN\" | asc put cloudflare --stdin")]
     Put {
         /// Local alias used by `asc run`
-        #[arg(value_parser = validate_secret_name)]
+        #[arg(value_parser = parse_secret_name)]
         name: String,
         /// Read the value from stdin. Required when stdin is not a terminal.
         #[arg(long)]
@@ -48,10 +48,10 @@ enum Commands {
     )]
     Run {
         /// Stored secret alias
-        #[arg(value_parser = validate_secret_name)]
+        #[arg(value_parser = parse_secret_name)]
         name: String,
         /// Environment variable exposed to the selected subprocess
-        #[arg(long, value_parser = validate_env_name)]
+        #[arg(long, value_parser = parse_env_name)]
         env: String,
         /// Lease duration (for example 500ms, 30s, 2m; maximum 60m)
         #[arg(long, default_value = "30s", value_parser = parse_ttl)]
@@ -64,7 +64,7 @@ enum Commands {
     List,
     /// Delete a named secret and its local alias
     Remove {
-        #[arg(value_parser = validate_secret_name)]
+        #[arg(value_parser = parse_secret_name)]
         name: String,
     },
     /// Show recent no-value command receipts

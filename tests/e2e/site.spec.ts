@@ -40,3 +40,18 @@ test('keyboard path reaches the primary action', async ({ page }) => {
   await page.keyboard.press('Enter');
   await expect(page.locator('#main')).toBeFocused();
 });
+
+test('cached shell stays usable offline and the service worker has no pending update', async ({ page, context }) => {
+  await page.goto('/');
+  const worker = await page.evaluate(async () => {
+    const registration = await navigator.serviceWorker.ready;
+    await registration.update();
+    return { active: Boolean(registration.active), waiting: Boolean(registration.waiting) };
+  });
+  expect(worker).toEqual({ active: true, waiting: false });
+
+  await context.setOffline(true);
+  await page.reload();
+  await expect(page.locator('main')).toBeVisible();
+  await context.setOffline(false);
+});
