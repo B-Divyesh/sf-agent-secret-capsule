@@ -9,5 +9,5 @@
   "monetization": "one-time",
   "constraints": "Use the OS keychain where available; warn that redaction cannot prevent exfiltration through an authorized network call; protect against shell history and child-process inheritance; no telemetry by default.",
   "confidence": 5,
-  "state": "BUILDING"
+  "state": "SHIPPED"
 }
