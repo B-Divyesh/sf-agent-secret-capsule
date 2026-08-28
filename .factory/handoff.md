@@ -1,65 +1,67 @@
-# Agent Secret Capsule — adversarial review 3 handoff
+# Agent Secret Capsule — polish 3 handoff
 
 ## Outcome
 
-Review 3 is complete at revision
-`19b8058765876fc100311b781687eda950da8cf1`. The verdict is **FAIL** with two
-blocking findings and one minor finding. The full evidence, exact copy audit,
-claim results, route checks, and prior-finding ledger are in
-`.factory/review-3.md`.
+All findings from adversarial reviews 1–3 are closed. The implementation is
+`d9737dd9b8bfaf20ccae35ab8fcbe9cc6d90de00`; this handoff, the final ledger,
+and evidence are committed after it. The static deployment
+`09283e34-d89d-42b4-91f0-414ed0641b9d` is live at
+<https://agent-secret-capsule.sociobot.in/>.
 
-No product code was changed.
+The repaired demo is a one-click, isolated read-only deployment-status sample.
+It now exposes its redacted result, expiry result, receipt alias, and receipt
+outcome in the initial desktop and phone viewports. The CLI ships the same
+bundled fake fixture with `asc demo`.
 
-## Findings left for the next repair round
+## What changed
 
-- **F-3-1 / review-1 B2 — BLOCKING:** The one-click demo hides the usable result
-  below the initial viewport at both review sizes. On 390×844, output starts at
-  y=834 and the receipt at y=1154; on 1440×900, only the terminal command and
-  receipt alias begin at the bottom edge. The sample is also a generic
-  `demo-api`/`sh` echo rather than a realistic coding-agent task.
-- **F-3-2 / review-1 B3, U16, U36, U39–U42 — BLOCKING:** Public claims about
-  credential lifecycle, receipt commands/schema, the stated 30-second limit,
-  CLI help/non-TTY behavior, and browser/CLI sample parity lack manifest entries
-  with successful tagged end-to-end tests.
-- **F-3-3 — MINOR:** At 390×844, only **Local CLI** is fully visible from the
-  three-fact strip. The second fact is clipped and the third is below the fold.
+- Added the feature-gated, isolated test keychain used only by compiled CLI
+  claim tests. Normal release builds still use the OS keychain path.
+- Added real black-box coverage for credential lifecycle, redaction forms,
+  process-tree expiry, output/receipt omission, receipt commands/schema, and
+  help/non-TTY behavior.
+- Added browser/CLI sample parity coverage and a realistic deployment-status
+  fixture in both the source and packaged crate.
+- Reworked `/demo/` and compacted the mobile landing hero. The three fact lines
+  are now tested above the 390×844 fold.
+- Updated the manifest, README, demo documentation, copy audit, catalog line,
+  offline cache version, and final cumulative ledger.
 
-## Verified
+## How to run and verify
 
-- Cold live first read at 390×844 and 1440×900: the job, audience, and first
-  action are clear at both widths.
-- All eight `.factory/claims.json` commands passed independently after `npm ci`
-  in a fresh non-local clone.
-- Browser demo isolation passed manually: only `demo:asc:run-count` was created;
-  Reset and Start for real removed it while preserving seeded non-demo storage.
-- The live demo reloaded offline after its first online visit. Its request log
-  was same-origin only and contained no console errors.
-- `asc --json demo` ran from a temporary working directory with an unavailable
-  keychain and sentinel `ASC_HOME`; it produced two redacted receipts in a new
-  `/tmp/asc-demo-*` directory and did not touch the sentinel.
-- Live route/metadata/link/back-focus checks passed. The unknown route returned
-  a designed HTTP 404. All crawled links and discovery assets returned their
-  expected status/content type.
-- Live Axe checks found zero serious/critical findings across `/`, `/demo/`,
-  `/privacy/`, `/terms/`, and the 404 at desktop and mobile.
-- `/opt/fleet/lib/verify-url.sh` passed the four 200 routes with no console
-  errors.
-- The distinct concrete-and-moss visual system matches `.factory/design.md`.
-
-## Local quality gates
-
-```text
-npm ci                 PASS (60 packages, 0 vulnerabilities)
-npm test               PASS (10 Rust, 2 Vitest, 29 Playwright; 5 intentional skips)
-npm run build          PASS (target/release/asc and dist/site)
+```sh
+npm ci
+npm test
+npm run build
+cargo package -p agent-secret-capsule --allow-dirty
 ```
 
-## Recommended repair order
+Run every command in `.factory/claims.json` independently. The clean-clone
+verification used `/tmp/asc-clean-WHfeRN` and passed all 13 claim commands,
+then `npm test`, `npm run build`, and package listing.
 
-1. Recompose `/demo/` so populated output and receipt evidence are fully visible
-   in the initial 390×844 and 1440×900 viewports; replace the generic sample with
-   a realistic bundled agent-command fixture and add viewport assertions.
-2. Complete `.factory/claims.json` and tagged packaged-CLI tests for every item
-   in F-3-2, or narrow/remove the corresponding copy.
-3. Compact the mobile landing hero so all three tested facts are above the fold.
-4. Re-run the entire adversarial checklist, not only these findings.
+The fresh-clone full suite passed 10 Rust tests, 2 Vitest tests, and 32
+Playwright tests (6 intentional duplicate-project skips). Local Lighthouse
+scored 100 performance, 100 accessibility, 100 best practices, and 100 SEO;
+LCP was 1,825ms, CLS 0, and TBT 0.
+
+## Live evidence
+
+- `verify-url.sh` passed `/`, `/demo/`, `/privacy/`, and `/terms/` with no
+  console errors, one h1, `lang=en`, main landmarks, and complete image alt
+  coverage. Evidence is under `.factory/evidence/polish-3-live*/`.
+- Cold live 1440×900 and 390×844 screenshots are in
+  `.factory/evidence/polish-3-live/`. The desktop demo evidence ends at 616px;
+  phone output/expiry end at 600px and receipt alias/outcome at 715/749px.
+- Live Axe scans found zero serious or critical findings for landing and demo
+  at both viewports. Privacy → Terms → Back restored h1 focus. All crawled
+  links returned 200; `/not-a-real-route` returned a designed 404 with complete
+  social metadata.
+- A cold live demo reload worked offline after its first visit. Its request log
+  had 19 same-origin requests, no cookies, and no localStorage writes.
+
+## Known gaps and next steps
+
+None. Do not publish the crate from this worker; the ready-to-publish command
+is `cargo package -p agent-secret-capsule` and registry credentials remain with
+the factory.
