@@ -1,0 +1,13 @@
+{
+  "slug": "agent-secret-capsule",
+  "title": "Agent Secret Capsule",
+  "territory": "devtools-data",
+  "user": "Developers allowing a coding or browser agent to use a narrowly scoped credential who need the command to succeed without exposing the raw credential in prompts, terminal output, or tool traces.",
+  "smallest_useful_product": "A local CLI that injects a selected secret only into a named subprocess, strips exact and encoded values from captured stdout/stderr, expires the lease, and writes a no-value receipt.",
+  "success_measure": "Across 100 controlled agent-tool invocations, no configured secret appears in captured terminal output while 95%+ of authorized calls complete successfully.",
+  "artifact_class": "cli",
+  "monetization": "one-time",
+  "constraints": "Use the OS keychain where available; warn that redaction cannot prevent exfiltration through an authorized network call; protect against shell history and child-process inheritance; no telemetry by default.",
+  "confidence": 5,
+  "state": "BUILDING"
+}
