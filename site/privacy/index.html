@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#171a17" />
+    <meta name="description" content="Privacy policy for Agent Secret Capsule." />
+    <title>Privacy — Agent Secret Capsule</title>
+    <link rel="preload" href="/assets/fonts/dejavu-sans-mono.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/assets/fonts/dejavu-serif-bold.woff2" as="font" type="font/woff2" crossorigin />
+    <script type="module" src="/src/legal.ts"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Agent Secret Capsule home"><span class="brand-mark" aria-hidden="true"><i></i></span><span>ASC / PRIVACY</span></a>
+      <nav aria-label="Legal navigation"><a href="/">Product</a><a href="/terms/">Terms</a></nav>
+    </header>
+    <main id="main" class="legal-main" tabindex="-1">
+      <p class="updated">EFFECTIVE 28 AUGUST 2026</p>
+      <h1>Privacy,<br />without fine print.</h1>
+      <p>Agent Secret Capsule is local-first. The CLI has no telemetry, analytics, account, or hosted secret store. Credential values are written only to your operating-system keychain and injected into the subprocess you explicitly select.</p>
+
+      <h2>Local CLI data</h2>
+      <p>The CLI stores secret aliases and no-value receipts in your user data directory. Receipts contain the time, alias, environment variable name, executable name, duration, outcome, exit code, lease length, and redaction count. They never intentionally contain the credential value or full command arguments. You control and may delete these files.</p>
+
+      <h2>Website and licenses</h2>
+      <p>This site does not use analytics, advertising cookies, or third-party scripts. If you paste or return with a license token, the token and a cached verification result are stored in your browser’s localStorage. The token is sent only to Sociobot’s license verification API. You can remove it by clearing site data.</p>
+
+      <h2>Purchases</h2>
+      <p>Sociobot/Dodo is the merchant of record and processes checkout data under its own notices. This site does not receive or store card details. The license service returns only whether a token is valid and its status.</p>
+
+      <h2>Network warning</h2>
+      <p>The command you authorize may make network requests. Agent Secret Capsule cannot prevent that command from sending the credential or derived data to its configured endpoint. Review the command and use a separate sandbox when appropriate.</p>
+
+      <h2>Contact</h2>
+      <p>For privacy requests or questions, open an issue in the project’s public source repository without including any secret or license token.</p>
+    </main>
+    <footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><i></i></span><span>ASC</span></a><p>Local by construction.</p><div><a href="/">Product</a><a href="/terms/">Terms</a></div><small>© 2026 Sociobot</small></footer>
+  </body>
+</html>
