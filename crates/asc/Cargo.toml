@@ -1,0 +1,36 @@
+[package]
+name = "agent-secret-capsule"
+version = "0.1.0"
+description = "Per-command secret leases with output scrubbing and no-value receipts"
+keywords = ["cli", "secrets", "agents", "security", "keychain"]
+categories = ["command-line-utilities", "authentication"]
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+readme = "../../README.md"
+
+[[bin]]
+name = "asc"
+path = "src/main.rs"
+
+[dependencies]
+base64 = "0.22.1"
+clap = { version = "4.5.47", features = ["derive", "wrap_help"] }
+hex = "0.4.3"
+rpassword = "7.4.0"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.143"
+time = { version = "=0.3.41", features = ["formatting", "macros"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2.175"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+keyring = { version = "3.6.3", default-features = false, features = ["sync-secret-service", "crypto-rust", "vendored"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+keyring = { version = "3.6.3", default-features = false, features = ["apple-native"] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+keyring = { version = "3.6.3", default-features = false, features = ["windows-native"] }
