@@ -1,0 +1,53 @@
+{
+  "origin": "https://agent-secret-capsule.sociobot.in",
+  "checks": {
+    "directDemo": {
+      "url": "https://agent-secret-capsule.sociobot.in/demo/",
+      "banner": true,
+      "focusedHeading": true,
+      "redactedOutput": "$ asc demo\nstdout deployment=api-gateway environment=production state=healthy\nstdout authorization=Bearer [REDACTED:ASC]\nstderr agent trace token=[REDACTED:ASC]\n✓ second sample command reached its 30ms time limit",
+      "receiptAlias": true
+    },
+    "resetKeepsRealData": {
+      "demoRunKey": null,
+      "localSentinel": "keep",
+      "sessionSentinel": "keep"
+    },
+    "demoToHome": {
+      "url": "https://agent-secret-capsule.sociobot.in/",
+      "h1Focused": true,
+      "announcement": "Agent Secret Capsule — give one command a credential loaded",
+      "storage": {
+        "demoRunKey": null,
+        "localSentinel": "keep",
+        "sessionSentinel": "keep"
+      }
+    },
+    "homeCopyAndExternalLink": {
+      "caption": "FIG. 01\nThe selected process and its children receive one credential.",
+      "cliReference": "https://github.com/B-Divyesh/sf-agent-secret-capsule#usage",
+      "source": "https://github.com/B-Divyesh/sf-agent-secret-capsule"
+    },
+    "footerExternalLinks": {
+      "/": "https://github.com/B-Divyesh/sf-agent-secret-capsule",
+      "/demo/": "https://github.com/B-Divyesh/sf-agent-secret-capsule",
+      "/privacy/": "https://github.com/B-Divyesh/sf-agent-secret-capsule",
+      "/terms/": "https://github.com/B-Divyesh/sf-agent-secret-capsule",
+      "/404.html": "https://github.com/B-Divyesh/sf-agent-secret-capsule"
+    },
+    "literal404": "This page does not exist.",
+    "homeLinkStatuses": {
+      "https://agent-secret-capsule.sociobot.in/#main": 200,
+      "https://agent-secret-capsule.sociobot.in/": 200,
+      "https://agent-secret-capsule.sociobot.in/demo/": 200,
+      "https://agent-secret-capsule.sociobot.in/#how": 200,
+      "https://agent-secret-capsule.sociobot.in/#install": 200,
+      "https://agent-secret-capsule.sociobot.in/privacy/": 200,
+      "https://github.com/B-Divyesh/sf-agent-secret-capsule#usage": 200,
+      "https://github.com/B-Divyesh/sf-agent-secret-capsule": 200,
+      "https://agent-secret-capsule.sociobot.in/terms/": 200
+    },
+    "readmeWebDemoLink": true,
+    "consoleErrors": []
+  }
+}

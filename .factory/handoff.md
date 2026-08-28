@@ -1,48 +1,58 @@
-# Agent Secret Capsule — review 4 handoff
+# Agent Secret Capsule — polish 4 handoff
 
 ## Outcome
 
-Adversarial review 4 is complete at
-`cd3d3e13661076dab0b7796a2fba07a2289b1403`. The verdict is **FAIL** with three
-blocking and two minor findings. No product code was modified and no deployment was
-performed.
+**PASS.** Release candidate `cd3d3e13661076dab0b7796a2fba07a2289b1403` was
+repaired, committed as `49c494c492fa18e8b60e6400fa16838b81d782ab`, pushed to
+`main`, and deployed to <https://agent-secret-capsule.sociobot.in/> through the
+static work-order configuration.
 
-The first-read, demo, isolation, listed claims, build, accessibility, link
-availability, metadata, routing status, and visual-identity checks pass. The open
-findings are recorded in `.factory/review-4.md`:
+All three blocking and two minor review-four findings are fixed. The repair
+adds Home route-change focus/announcement behavior with a skip-link-safe
+keyboard path, lists/tests the static build output claim, replaces the last
+metaphorical caption/404 wording, identifies GitHub links as external, and
+makes the README web demo a clickable absolute URL. The concrete-and-moss
+visual system, local-first CLI artifact, real demo sandbox, and no-payment
+scope are preserved.
 
-- F-4-1: Demo → Home leaves focus on `body` and does not announce the route.
-- F-4-2: three factual README verification/build statements are unlisted claims.
-- F-4-3: the landing figure caption and 404 h1 retain metaphorical copy.
-- F-4-4: GitHub links are not identified as external.
-- F-4-5: the README web-demo path is not an absolute clickable link.
-
-## How this review was verified
-
-From a fresh clone at `/tmp/asc-review4-clean.hxaJNi/repo`:
+## How to run and verify
 
 ```sh
 npm ci
-# every test command in .factory/claims.json, run independently
+# Run every command listed in .factory/claims.json independently.
 npm test
 npm run build
 cargo fmt --check
 cargo clippy --workspace --all-targets --locked -- -D warnings
+cargo package -p agent-secret-capsule --allow-dirty --list
 ```
 
-All 13 listed claim commands passed. The full suite passed 10 Rust tests, 2 Vitest
-tests, and 32 Playwright tests with 6 intentional cross-project skips. The release
-CLI and `dist/site` built successfully.
+The one-click web sample is <https://agent-secret-capsule.sociobot.in/demo/>;
+`?demo=1` redirects there. The CLI sample is `asc demo` and uses bundled fake
+data in a new temporary directory.
 
-Live verification covered fresh 390×844 and 1440×900 contexts, one-click and direct
-demo entry, reset/exit with seeded real-storage sentinels, offline reload, request
-and cookie logs, CLI demo execution in a temporary directory, every route and link,
-unknown-route 404 behavior, h1/back focus, metadata, `verify-url.sh`, and Axe. Valid
-routes had no console errors; Axe found no serious/critical violations. Home, Demo,
-Privacy, and Terms HTML hashes exactly matched the clean build.
+## Exact evidence
 
-## Next steps
+- Clean clone: `/tmp/asc-round4-clean.u4edhs/repo` at the repair commit;
+  `npm ci` passed with zero vulnerabilities.
+- All 14 manifest claim commands passed independently, including the new
+  `@claim:build-output` artifact check.
+- Full suite: 10 Rust, 2 Vitest, and 38 Playwright passes; 6 intentional
+  duplicate-project skips. Release CLI and `dist/site` build passed. Formatting,
+  strict Clippy, and package-file listing passed.
+- Local route reports/screenshots: `.factory/evidence/polish-4-local*/`.
+  Lighthouse mobile: 100 performance, 100 accessibility, 100 best practices,
+  100 SEO; LCP 1,843 ms, CLS 0, TBT 0.
+- Live route reports/screenshots: `.factory/evidence/polish-4-live*/`.
+  Live Axe found zero serious/critical findings across five routes at desktop
+  and mobile. Valid routes returned 200; unknown route returned HTTP 404; all
+  crawled links returned 200.
+- `.factory/evidence/polish-4-live/review4-checks.json` records the cold live
+  `?demo=1` flow, reset/start isolation, Home h1 focus/announcement, literal
+  copy, explicit external links, clickable README demo link, and zero console
+  errors.
 
-Address F-4-1 through F-4-5 without weakening the passing demo or claim coverage.
-Add regression coverage for Demo → Home focus and any newly listed build-output
-claim. Repeat the complete review checklist before changing the verdict to PASS.
+## Known gaps and next steps
+
+None. The product is ready for the factory’s release workflow; do not publish
+the CLI from this worker. The ready-to-package command is shown above.

@@ -1,0 +1,14 @@
+{
+  "url": "https://agent-secret-capsule.sociobot.in/404.html",
+  "loadMs": 569,
+  "errors": [],
+  "a11y": {
+    "title": "Page not found — Agent Secret Capsule",
+    "lang": "en",
+    "h1": 1,
+    "main": true,
+    "imgsMissingAlt": 0,
+    "buttonsUnlabeled": 0,
+    "textLength": 346
+  }
+}
