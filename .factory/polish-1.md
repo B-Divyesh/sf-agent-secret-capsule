@@ -89,4 +89,6 @@ remains in the landing copy or README.
 - Demo/mobile: `.factory/evidence/polish-1-demo/screenshot-mobile.png`
 - Semantic/console reports: `.factory/evidence/polish-1-local/verify.json` and
   `.factory/evidence/polish-1-demo/verify.json`
-- Public checks are recorded in `.factory/handoff.md` after deployment.
+- Public checks: `https://agent-secret-capsule.sociobot.in/` and `/demo/`
+  passed cold `verify-url.sh`; the unknown route returned 404. Live screenshots
+  and Lighthouse evidence are in `.factory/evidence/polish-1-live*/`.
