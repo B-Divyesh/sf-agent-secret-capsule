@@ -1,67 +1,48 @@
-# Agent Secret Capsule — polish 3 handoff
+# Agent Secret Capsule — review 4 handoff
 
 ## Outcome
 
-All findings from adversarial reviews 1–3 are closed. The deployed implementation
-is `d9737dd9b8bfaf20ccae35ab8fcbe9cc6d90de00`; the evidence-and-handoff commit
-is `1244469ad5de1fe96edb3950350e22324ea991bf`. The static deployment
-`09283e34-d89d-42b4-91f0-414ed0641b9d` is live at
-<https://agent-secret-capsule.sociobot.in/>.
+Adversarial review 4 is complete at
+`cd3d3e13661076dab0b7796a2fba07a2289b1403`. The verdict is **FAIL** with three
+blocking and two minor findings. No product code was modified and no deployment was
+performed.
 
-The repaired demo is a one-click, isolated read-only deployment-status sample.
-It now exposes its redacted result, expiry result, receipt alias, and receipt
-outcome in the initial desktop and phone viewports. The CLI ships the same
-bundled fake fixture with `asc demo`.
+The first-read, demo, isolation, listed claims, build, accessibility, link
+availability, metadata, routing status, and visual-identity checks pass. The open
+findings are recorded in `.factory/review-4.md`:
 
-## What changed
+- F-4-1: Demo → Home leaves focus on `body` and does not announce the route.
+- F-4-2: three factual README verification/build statements are unlisted claims.
+- F-4-3: the landing figure caption and 404 h1 retain metaphorical copy.
+- F-4-4: GitHub links are not identified as external.
+- F-4-5: the README web-demo path is not an absolute clickable link.
 
-- Added the feature-gated, isolated test keychain used only by compiled CLI
-  claim tests. Normal release builds still use the OS keychain path.
-- Added real black-box coverage for credential lifecycle, redaction forms,
-  process-tree expiry, output/receipt omission, receipt commands/schema, and
-  help/non-TTY behavior.
-- Added browser/CLI sample parity coverage and a realistic deployment-status
-  fixture in both the source and packaged crate.
-- Reworked `/demo/` and compacted the mobile landing hero. The three fact lines
-  are now tested above the 390×844 fold.
-- Updated the manifest, README, demo documentation, copy audit, catalog line,
-  offline cache version, and final cumulative ledger.
+## How this review was verified
 
-## How to run and verify
+From a fresh clone at `/tmp/asc-review4-clean.hxaJNi/repo`:
 
 ```sh
 npm ci
+# every test command in .factory/claims.json, run independently
 npm test
 npm run build
-cargo package -p agent-secret-capsule --allow-dirty
+cargo fmt --check
+cargo clippy --workspace --all-targets --locked -- -D warnings
 ```
 
-Run every command in `.factory/claims.json` independently. The clean-clone
-verification used `/tmp/asc-clean-WHfeRN` and passed all 13 claim commands,
-then `npm test`, `npm run build`, and package listing.
+All 13 listed claim commands passed. The full suite passed 10 Rust tests, 2 Vitest
+tests, and 32 Playwright tests with 6 intentional cross-project skips. The release
+CLI and `dist/site` built successfully.
 
-The fresh-clone full suite passed 10 Rust tests, 2 Vitest tests, and 32
-Playwright tests (6 intentional duplicate-project skips). Local Lighthouse
-scored 100 performance, 100 accessibility, 100 best practices, and 100 SEO;
-LCP was 1,825ms, CLS 0, and TBT 0.
+Live verification covered fresh 390×844 and 1440×900 contexts, one-click and direct
+demo entry, reset/exit with seeded real-storage sentinels, offline reload, request
+and cookie logs, CLI demo execution in a temporary directory, every route and link,
+unknown-route 404 behavior, h1/back focus, metadata, `verify-url.sh`, and Axe. Valid
+routes had no console errors; Axe found no serious/critical violations. Home, Demo,
+Privacy, and Terms HTML hashes exactly matched the clean build.
 
-## Live evidence
+## Next steps
 
-- `verify-url.sh` passed `/`, `/demo/`, `/privacy/`, and `/terms/` with no
-  console errors, one h1, `lang=en`, main landmarks, and complete image alt
-  coverage. Evidence is under `.factory/evidence/polish-3-live*/`.
-- Cold live 1440×900 and 390×844 screenshots are in
-  `.factory/evidence/polish-3-live/`. The desktop demo evidence ends at 616px;
-  phone output/expiry end at 600px and receipt alias/outcome at 715/749px.
-- Live Axe scans found zero serious or critical findings for landing and demo
-  at both viewports. Privacy → Terms → Back restored h1 focus. All crawled
-  links returned 200; `/not-a-real-route` returned a designed 404 with complete
-  social metadata.
-- A cold live demo reload worked offline after its first visit. Its request log
-  had 19 same-origin requests, no cookies, and no localStorage writes.
-
-## Known gaps and next steps
-
-None. Do not publish the crate from this worker; the ready-to-publish command
-is `cargo package -p agent-secret-capsule` and registry credentials remain with
-the factory.
+Address F-4-1 through F-4-5 without weakening the passing demo or claim coverage.
+Add regression coverage for Demo → Home focus and any newly listed build-output
+claim. Repeat the complete review checklist before changing the verdict to PASS.
