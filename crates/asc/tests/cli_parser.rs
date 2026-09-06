@@ -125,6 +125,9 @@ fn stop_process_if_it_opens_a_socket(command: &mut Command) {
     }
 }
 
+#[cfg(not(target_os = "linux"))]
+fn stop_process_if_it_opens_a_socket(_command: &mut Command) {}
+
 #[test]
 fn valid_alias_commands_reach_their_operational_json_paths_without_panicking() {
     let root = temporary_root("valid");
@@ -244,7 +247,6 @@ fn release_binary_fails_closed_when_the_platform_credential_store_is_unavailable
 
 /// @claim:cli-doctor-privacy
 #[test]
-#[cfg(target_os = "linux")]
 fn claim_release_doctor_reads_no_credential_and_opens_no_network_socket() {
     let root = temporary_root("doctor-privacy");
     let credential_backend = root.join("credential-backend-must-not-exist");
