@@ -75,3 +75,30 @@ No paid offer is currently advertised or registered. The product remains a free,
 MIT-licensed CLI. A future one-time paid offer requires Sociobot billing
 registration and a real entitlement path before it is advertised; no mock billing
 flow or billing metadata was added.
+
+## Verification 3
+
+Independent verification 3 reviewed implementation
+`f018b7d8f15a1be374575d642f4e25c158fa74d0` and documentation baseline
+`97da8082e5dd599f3d6cc76ee5563192b56ab49c`.
+
+**PASS:** zero findings and zero untested public claims. A fresh clone completed
+`npm ci`, all 14 declared claim commands independently, `npm test`, `npm run
+build`, `cargo fmt --check`, strict Clippy, and `cargo package`. A new consumer
+install exercised the packaged `asc` artifact, its fake-data demo, empty JSON
+states, help, and invalid-input recovery.
+
+Fresh live desktop and phone browser contexts confirmed the job, audience, and
+first action before scrolling; the one-click sample, persistent sample label,
+Reset, real-data isolation, offline reload, keyboard skip link, reduced motion,
+route structure, 404, legal pages, privacy behavior, and 44×44 shared targets.
+`verify-url.sh` and live Axe passed for Home, Demo, Privacy, Terms, and 404.
+
+The native-keychain environment note remains: this disposable container has no
+unlocked Secret Service session. The isolated test-keyring claims cover the full
+lifecycle; repeat native `put → list → run → receipts → remove` on an unlocked
+target OS before distributing binaries.
+
+See `.factory/verification-3.md` for the full evidence and prior-finding
+disposition. Live artifacts matched the fresh build from the reviewed
+implementation.
