@@ -1,8 +1,9 @@
-# Copy audit — repair 2
+# Copy audit — repair 3
 
-Reviewed after the round-four rewrite. Landing and README visitor sentences
-are at most 22 words. Commands, field labels, route paths, and stamped UI
-fragments are excluded from sentence counts. No banned marketing term appears.
+Reviewed after removing the unproved native-keychain promise from the installed
+CLI and changelog. Landing and README visitor sentences remain at most 22 words.
+Commands, field labels, route paths, and stamped UI fragments are excluded from
+sentence counts. No banned marketing term appears.
 
 ## Landing page
 
@@ -116,6 +117,19 @@ fragments are excluded from sentence counts. No banned marketing term appears.
 | Location | Sentence | Characters | Claim/evidence |
 | --- | --- | ---: | --- |
 | Catalog | Run one coding-agent command with a temporary credential, redact output, and save a no-value receipt. | 101 | `process-tree`, `redaction-forms`, `captured-output-receipt` |
+
+## Changed CLI and changelog copy
+
+| Location | Sentence or description | Words | Claim/evidence |
+| --- | --- | ---: | --- |
+| Root help | Agent Secret Capsule keeps named credentials behind local aliases. | 9 | `credential-lifecycle` |
+| Put help | Store or replace a credential under a local alias. | 9 | `credential-lifecycle` |
+| Changelog | Named credentials addressed through local aliases. | 6 | `credential-lifecycle` |
+
+The removed wording named successful OS-keychain storage. Native success is not
+claimed because this clean worker has no unlocked platform credential service.
+The regression exercises the default-feature binary with an unavailable platform
+store. It confirms failure leaves no test-store file or alias metadata.
 
 ## Terminology
 

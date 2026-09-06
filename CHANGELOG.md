@@ -9,7 +9,7 @@ this project uses semantic versioning.
 
 ### Added
 
-- OS-keychain-backed named secrets.
+- Named credentials addressed through local aliases.
 - Per-command, expiring environment leases.
 - Captured stdout/stderr redaction for exact and common encoded values.
 - No-value local receipts with human and JSON output.

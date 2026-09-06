@@ -131,3 +131,46 @@ fn invalid_alias_and_environment_errors_are_usage_errors_not_panics() {
 
     let _ = fs::remove_dir_all(root);
 }
+
+#[test]
+#[cfg(target_os = "linux")]
+fn release_binary_fails_closed_when_the_platform_credential_store_is_unavailable() {
+    let root = temporary_root("unavailable-platform-store");
+    let test_store = root.join("test-store-must-not-exist");
+    let alias = format!("release-store-{}", std::process::id());
+    let secret = "release-only-secret-7391";
+
+    let mut command = asc(&root);
+    let mut child = command
+        .env(
+            "DBUS_SESSION_BUS_ADDRESS",
+            "unix:path=/tmp/asc-deliberately-missing-secret-service",
+        )
+        .env("ASC_TEST_KEYRING_DIR", &test_store)
+        .args(["--json", "put", &alias, "--stdin"])
+        .stdin(Stdio::piped())
+        .spawn()
+        .expect("release-configured put should start");
+    child
+        .stdin
+        .take()
+        .expect("put stdin should be available")
+        .write_all(secret.as_bytes())
+        .expect("test credential should be written");
+    let output = child.wait_with_output().expect("put should finish");
+
+    assert_eq!(output.status.code(), Some(3), "{}", output_text(&output));
+    assert_json_result(&output);
+    assert_not_panic(&output);
+    assert!(!output_text(&output).contains(secret));
+    assert!(
+        !test_store.exists(),
+        "a default-feature binary must not activate the test-only file store"
+    );
+    assert!(
+        !root.join("secrets.json").exists(),
+        "a failed platform-store write must not leave alias metadata"
+    );
+
+    let _ = fs::remove_dir_all(root);
+}

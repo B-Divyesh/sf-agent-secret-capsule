@@ -21,8 +21,8 @@ use std::collections::BTreeMap;
     name = "asc",
     version,
     about = "Give one command a temporary credential with redacted output",
-    long_about = "Agent Secret Capsule stores named credentials in your OS keychain. It gives one credential to a selected process and its children until exit or the time limit. It captures and redacts their output, then writes a no-value receipt.\n\nSecurity limit: an authorized command can send the credential over the network or write it to disk. It can also transform the credential or pass it to a child. Use a sandbox for hostile code.",
-    after_help = "EXIT CODES:\n  0 success\n  2 usage error\n  3 keychain or local-data error\n  4 command could not start\n  124 lease expired\n  otherwise the child command's exit code"
+    long_about = "Agent Secret Capsule keeps named credentials behind local aliases. It gives one credential to a selected process and its children until exit or the time limit. It captures and redacts their output, then writes a no-value receipt.\n\nSecurity limit: an authorized command can send the credential over the network or write it to disk. It can also transform the credential or pass it to a child. Use a sandbox for hostile code.",
+    after_help = "EXIT CODES:\n  0 success\n  2 usage error\n  3 credential-storage or local-data error\n  4 command could not start\n  124 time limit reached\n  otherwise the child command's exit code"
 )]
 struct Cli {
     /// Emit machine-readable JSON. For `run`, captured output is included in the object.
@@ -35,7 +35,7 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
-    /// Store or replace a named secret in the OS keychain
+    /// Store or replace a credential under a local alias
     #[command(after_help = "EXAMPLE:\n  printf '%s' \"$TOKEN\" | asc put cloudflare --stdin")]
     Put {
         /// Local alias used by `asc run`
@@ -344,7 +344,7 @@ fn command_put(name: String, from_stdin: bool, root: &Path, json: bool) -> Resul
             serde_json::json!({"ok": true, "name": name, "stored": true})
         );
     } else {
-        println!("Stored '{name}' in the OS keychain. No value was written locally.");
+        println!("Stored '{name}'. ASC wrote only its alias to the local data directory.");
     }
     Ok(())
 }
@@ -360,7 +360,7 @@ fn command_remove(name: String, root: &Path, json: bool) -> Result<(), String> {
             serde_json::json!({"ok": true, "name": name, "removed": true})
         );
     } else {
-        println!("Removed '{name}' from the OS keychain.");
+        println!("Removed '{name}'.");
     }
     Ok(())
 }
@@ -372,7 +372,7 @@ fn command_list(root: &Path, json: bool) -> Result<(), String> {
     } else if names.is_empty() {
         println!("No secret aliases yet. Add one with: asc put <name>");
     } else {
-        println!("Stored aliases (values remain in the OS keychain):");
+        println!("Stored aliases (values are never printed):");
         for name in names {
             println!("  {name}");
         }
