@@ -266,13 +266,26 @@ test('mobile controls meet the touch target and never overflow', async ({ page }
   await page.goto('/demo/');
   for (const name of ['Reset demo', 'Start for real']) {
     const box = await page.getByRole(name === 'Reset demo' ? 'button' : 'link', { name }).boundingBox();
+    expect(box?.width).toBeGreaterThanOrEqual(44);
     expect(box?.height).toBeGreaterThanOrEqual(44);
   }
-  for (const link of await page.locator('footer a').all()) {
-    const box = await link.boundingBox();
-    expect(box?.height).toBeGreaterThanOrEqual(44);
+  for (const path of ['/', '/demo/', '/privacy/', '/terms/', '/404.html']) {
+    await page.goto(path);
+    for (const target of await page.locator('header a:visible, footer a:visible').all()) {
+      const box = await target.boundingBox();
+      expect(box?.width).toBeGreaterThanOrEqual(44);
+      expect(box?.height).toBeGreaterThanOrEqual(44);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   }
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});
+
+test('Terms keep every rendered sentence within the plain-words limit', async ({ page }) => {
+  await page.goto('/terms/');
+  const sentences = (await page.locator('main').innerText()).match(/[^.!?]+[.!?]+/g) ?? [];
+  for (const sentence of sentences) {
+    expect(sentence.trim().split(/\s+/).filter(Boolean).length).toBeLessThanOrEqual(22);
+  }
 });
 
 test('keyboard skip link reaches main content', async ({ page }) => {

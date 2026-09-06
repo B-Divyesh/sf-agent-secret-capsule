@@ -102,7 +102,7 @@ p { margin: 0; }
 .brand-mark i { width: 4px; height: 100%; background: var(--moss); }
 
 nav { display: flex; align-items: center; gap: clamp(16px, 2.5vw, 40px); }
-nav a { min-height: 44px; display: inline-flex; align-items: center; font-size: 13px; text-decoration: none; }
+nav a { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; text-decoration: none; }
 .nav-buy { padding: 0 16px; border: 1px solid var(--dust); }
 
 .hero {
@@ -245,8 +245,8 @@ code { color: var(--lichen); font-family: var(--font-body); }
 footer { padding: 42px var(--gutter); display: grid; grid-template-columns: auto 1fr auto auto; gap: 32px; align-items: center; color: var(--dust); font-size: 13px; }
 footer .brand { color: var(--ink); }
 footer > p { justify-self: center; }
-footer > div { display: flex; gap: 22px; }
-footer a { min-height: 44px; display: inline-flex; align-items: center; }
+footer > div { display: flex; flex-wrap: wrap; gap: 22px; }
+footer a { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
 
 .legal-main { max-width: 860px; margin: 0 auto; padding: 88px var(--gutter) 120px; }
 .legal-main h1 { font-size: clamp(50px, 8vw, 86px); }

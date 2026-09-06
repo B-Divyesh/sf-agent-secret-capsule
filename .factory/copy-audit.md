@@ -1,4 +1,4 @@
-# Copy audit — polish 4
+# Copy audit — repair 2
 
 Reviewed after the round-four rewrite. Landing and README visitor sentences
 are at most 22 words. Commands, field labels, route paths, and stamped UI
@@ -91,6 +91,25 @@ fragments are excluded from sentence counts. No banned marketing term appears.
 | Location | Sentence | Words | Claim/evidence |
 | --- | --- | ---: | --- |
 | Heading | This page does not exist. | 5 | Clear page state |
+
+## Terms page
+
+| Location | Sentence | Words | Claim/evidence |
+| --- | --- | ---: | --- |
+| Intro | Agent Secret Capsule is open-source software under the MIT License. | 10 | `license-package` |
+| Intro | By using it, you accept these terms and the security limits below. | 12 | Legal terms |
+| Responsibility | You choose which credential and command to authorize. | 8 | Legal terms |
+| Responsibility | Use least-privilege credentials, inspect command and network scope, and comply with the terms of any upstream service. | 17 | Legal terms |
+| Responsibility | Do not use the product to access systems without authorization. | 10 | Legal terms |
+| Boundary | Output redaction reduces accidental disclosure; it does not make hostile code safe. | 12 | Security limitation |
+| Boundary | An authorized subprocess can transmit, transform, write, or pass a secret to children. | 13 | Security limitation |
+| Boundary | No redaction system can cover every transformation. | 7 | Security limitation |
+| Boundary | Use an appropriate sandbox in addition to this tool. | 9 | Security limitation |
+| Warranty | The software is provided “as is,” without warranty of any kind, as stated in the MIT License. | 17 | Legal terms |
+| Warranty | To the maximum extent allowed by law, the authors are not liable for credential exposure or service interruption. | 18 | Legal terms |
+| Warranty | They are not liable for indirect damages arising from use. | 10 | Legal terms |
+| Changes | Material changes will be dated on this page. | 8 | Legal terms |
+| Changes | Continued use after a change means you accept the revised terms. | 11 | Legal terms |
 
 ## Catalog description
 

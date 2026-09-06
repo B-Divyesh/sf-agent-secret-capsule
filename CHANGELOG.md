@@ -13,4 +13,3 @@ this project uses semantic versioning.
 - Per-command, expiring environment leases.
 - Captured stdout/stderr redaction for exact and common encoded values.
 - No-value local receipts with human and JSON output.
-- Static documentation, threat model, paid license restore, and legal pages.
