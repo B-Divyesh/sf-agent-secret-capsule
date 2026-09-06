@@ -102,3 +102,30 @@ target OS before distributing binaries.
 See `.factory/verification-3.md` for the full evidence and prior-finding
 disposition. Live artifacts matched the fresh build from the reviewed
 implementation.
+
+## Review 7
+
+Review 7 examined implementation `f018b7d8f15a1be374575d642f4e25c158fa74d0`
+against documentation baseline `97da8082e5dd599f3d6cc76ee5563192b56ab49c`.
+
+**FAIL:** one major finding and one untested public claim remain. The changelog
+and installed CLI say credentials use the OS keychain, but
+`.factory/claims.json` has no native-keychain claim. Its closest lifecycle test
+uses a feature-gated, file-backed test store and cannot prove release-native
+keychain behavior. In this container the installed consumer CLI correctly
+returned an operational JSON error when Secret Service was unavailable; that
+does not verify successful native storage.
+
+All 14 declared claims passed independently from a clean checkout. `npm test`,
+`npm run build`, formatting, strict Clippy, packaging, and a clean consumer
+install passed. Fresh live desktop and phone checks passed for the first screen,
+demo isolation/reset, offline reload, keyboard/focus, reduced motion,
+accessibility, privacy, legal routes, 404, links, and artifact-hash comparison.
+
+To close the finding, either remove public OS-keychain storage promises or add
+an `os-keychain-storage` manifest claim that tests release-configured
+`put → list → run → remove` against native keychain storage on every supported
+target without exposing a credential.
+
+See `.factory/review-7.md` and
+`/work/.evidence/agent-secret-capsule-review-7/` for evidence.
