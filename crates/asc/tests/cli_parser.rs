@@ -275,6 +275,23 @@ fn claim_release_doctor_reads_no_credential_and_opens_no_network_socket() {
     assert_eq!(report["telemetry"], false);
     assert_eq!(report["data_dir"], root.to_string_lossy().as_ref());
     assert!(!output_text(&output).contains(secret));
+
+    let mut human_command = asc(&root);
+    human_command
+        .env(
+            "DBUS_SESSION_BUS_ADDRESS",
+            format!("unix:path={}", credential_backend.display()),
+        )
+        .env("ASC_TEST_KEYRING_DIR", &credential_backend)
+        .arg("doctor");
+    stop_process_if_it_opens_a_socket(&mut human_command);
+    let human = human_command
+        .output()
+        .expect("human release doctor should finish");
+    assert!(human.status.success(), "{}", output_text(&human));
+    assert!(String::from_utf8_lossy(&human.stdout).contains("telemetry: off"));
+    assert!(!output_text(&human).contains(secret));
+
     assert!(
         !credential_backend.exists(),
         "doctor must not access the credential backend"
