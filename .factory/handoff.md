@@ -12,7 +12,7 @@ Repair 2 closes every finding from review 6.
 
 Implementation SHA: `f018b7d8f15a1be374575d642f4e25c158fa74d0`
 
-Documentation SHA: recorded after this handoff is committed.
+Verification documentation baseline: `e9b42e933f2506532198c62192dd7a4f57540f9b`
 
 The static implementation was deployed to
 <https://agent-secret-capsule.sociobot.in/>. Live Home, CSS, and main JavaScript
