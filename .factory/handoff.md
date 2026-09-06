@@ -1,20 +1,18 @@
-# Agent Secret Capsule — repair 4 handoff
+# Agent Secret Capsule — verification 5 handoff
 
 ## Outcome
 
-Review 8 finding F-8-1 is fixed. The two public `doctor` privacy statements
-now map to one declared, outcome-based claim test. The test runs the
-default-feature release-profile binary in a fresh data directory.
+Independent verification 5 passed. Review 8 finding F-8-1 remains fixed, with
+zero current findings and zero untested public claims.
 
-- Repair implementation and test SHA: `3559a6eeb6451347700b9309e040419a48135a94`
-- Last site-code implementation SHA: `6ce85df2f4a76d674fa95a08bda005918257cfcb`
-- Repair base SHA: `240df8b1062530ad78c6f1f4ed08ffb2dee31c37`
+- Implementation and test SHA: `3559a6eeb6451347700b9309e040419a48135a94`
+- Documentation SHA: `815bb289e89271a14d054e29f1affc3c40b8a371`
 - Live URL: <https://agent-secret-capsule.sociobot.in/>
 - Static deployment ID: `dc766d4b-d491-4bf5-8fba-a21a123957dd`
 
-The repair changes tests and factory documentation only. The rebuilt static
-payload is byte-for-byte equal to the prior site implementation and was
-redeployed successfully.
+The repair changed tests and factory documentation only. Verification 5 rebuilt
+the static site from a clean remote checkout and matched all checked live pages
+and assets byte for byte.
 
 ## What changed
 
@@ -108,3 +106,26 @@ still fails closed when that service is unavailable, while lifecycle behavior
 is covered by the explicit isolated test-store suite.
 
 No known product finding remains.
+
+## Verification 5
+
+An independent remote clean checkout at `815bb28` ran all 15 declared claim
+commands separately. All passed, including `cli-doctor-privacy` against a
+default-feature release binary with a socket-denying seccomp filter. `npm test`,
+`npm run build`, formatting, strict Clippy, and packaging passed too.
+
+Fresh live desktop and phone checks confirmed the job, developer audience, and
+sample action before scrolling. Home, Demo, Privacy, Terms, and 404 passed the
+URL verifier and Playwright Axe scans with no serious or critical issue. The
+Demo was populated, labeled, resettable by keyboard, isolated from normal
+storage, and reloadable offline after its first visit. There were no cookies or
+third-party requests. Live Home, Demo, Privacy, Terms, 404, JS, and CSS hashes
+matched the clean build.
+
+The installed release artifact was exercised from a fresh consumer prefix with
+only fake sample data. `doctor` reported telemetry off without creating the
+unavailable credential-backend path; normal demo output was redacted and
+no-value. Invalid and boundary CLI inputs returned documented usage errors.
+
+Verification report: `.factory/verification-5.md`. Evidence:
+`/work/.evidence/agent-secret-capsule-verify-5/`.
