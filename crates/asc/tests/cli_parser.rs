@@ -13,6 +13,9 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 
+#[cfg(target_os = "linux")]
+use std::{io, os::unix::process::CommandExt};
+
 fn temporary_root(label: &str) -> PathBuf {
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -56,6 +59,70 @@ fn assert_json_result(output: &Output) {
             .and_then(serde_json::Value::as_bool)
             .is_some()
     );
+}
+
+#[cfg(target_os = "linux")]
+fn stop_process_if_it_opens_a_socket(command: &mut Command) {
+    // A Secret Service lookup and an outbound telemetry request both need to
+    // create a socket on Linux. This seccomp filter turns either attempt into
+    // SIGSYS, so a successful command is observable evidence that neither path
+    // ran. The filter is installed immediately before exec and remains active
+    // in the release-profile binary.
+    unsafe {
+        command.pre_exec(|| {
+            const BPF_LD_W_ABS: u16 = 0x20;
+            const BPF_JMP_JEQ_K: u16 = 0x15;
+            const BPF_RET_K: u16 = 0x06;
+            const SECCOMP_RET_TRAP: u32 = 0x0003_0000;
+            const SECCOMP_RET_ALLOW: u32 = 0x7fff_0000;
+
+            let mut filter = [
+                libc::sock_filter {
+                    code: BPF_LD_W_ABS,
+                    jt: 0,
+                    jf: 0,
+                    k: 0,
+                },
+                libc::sock_filter {
+                    code: BPF_JMP_JEQ_K,
+                    jt: 0,
+                    jf: 1,
+                    k: libc::SYS_socket as u32,
+                },
+                libc::sock_filter {
+                    code: BPF_RET_K,
+                    jt: 0,
+                    jf: 0,
+                    k: SECCOMP_RET_TRAP,
+                },
+                libc::sock_filter {
+                    code: BPF_RET_K,
+                    jt: 0,
+                    jf: 0,
+                    k: SECCOMP_RET_ALLOW,
+                },
+            ];
+            let program = libc::sock_fprog {
+                len: filter.len() as u16,
+                filter: filter.as_mut_ptr(),
+            };
+
+            // SAFETY: prctl receives the documented scalar values and a valid
+            // pointer to `program`, which remains alive for the syscall.
+            if libc::prctl(libc::PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) != 0 {
+                return Err(io::Error::last_os_error());
+            }
+            if libc::prctl(
+                libc::PR_SET_SECCOMP,
+                libc::SECCOMP_MODE_FILTER,
+                &program as *const libc::sock_fprog,
+            ) != 0
+            {
+                return Err(io::Error::last_os_error());
+            }
+            Ok(())
+        });
+    }
 }
 
 #[test]
@@ -170,6 +237,52 @@ fn release_binary_fails_closed_when_the_platform_credential_store_is_unavailable
     assert!(
         !root.join("secrets.json").exists(),
         "a failed platform-store write must not leave alias metadata"
+    );
+
+    let _ = fs::remove_dir_all(root);
+}
+
+/// @claim:cli-doctor-privacy
+#[test]
+#[cfg(target_os = "linux")]
+fn claim_release_doctor_reads_no_credential_and_opens_no_network_socket() {
+    let root = temporary_root("doctor-privacy");
+    let credential_backend = root.join("credential-backend-must-not-exist");
+    let secret = "doctor-must-not-read-this-secret-4982";
+    fs::create_dir_all(&root).expect("doctor sandbox should be created");
+    fs::write(root.join("secret-canary"), secret).expect("secret canary should be written");
+
+    let mut command = asc(&root);
+    command
+        .env(
+            "DBUS_SESSION_BUS_ADDRESS",
+            format!("unix:path={}", credential_backend.display()),
+        )
+        .env("ASC_TEST_KEYRING_DIR", &credential_backend)
+        .args(["--json", "doctor"]);
+    stop_process_if_it_opens_a_socket(&mut command);
+    let output = command.output().expect("release doctor should finish");
+
+    assert!(output.status.success(), "{}", output_text(&output));
+    let report: serde_json::Value =
+        serde_json::from_slice(&output.stdout).unwrap_or_else(|error| {
+            panic!(
+                "doctor should return JSON ({error}): {}",
+                output_text(&output)
+            )
+        });
+    assert_eq!(report["ok"], true);
+    assert_eq!(report["telemetry"], false);
+    assert_eq!(report["data_dir"], root.to_string_lossy().as_ref());
+    assert!(!output_text(&output).contains(secret));
+    assert!(
+        !credential_backend.exists(),
+        "doctor must not access the credential backend"
+    );
+    assert_eq!(
+        fs::read_to_string(root.join("secret-canary"))
+            .expect("secret canary should remain readable"),
+        secret
     );
 
     let _ = fs::remove_dir_all(root);

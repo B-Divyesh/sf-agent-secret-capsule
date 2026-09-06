@@ -70,6 +70,13 @@
     "sandbox": "compiled CLI checks root and every subcommand help plus the non-TTY negative case"
   },
   {
+    "id": "cli-doctor-privacy",
+    "claim": "asc doctor reads no credential and opens no network socket while reporting telemetry disabled.",
+    "where": "asc --help and asc --json doctor",
+    "test": "cargo test --release --locked --test cli_parser claim_release_doctor_reads_no_credential_and_opens_no_network_socket",
+    "sandbox": "fresh ASC_HOME; normal release-profile binary runs under a Linux seccomp filter that terminates it on any socket creation; unavailable D-Bus and credential-store canaries remain untouched"
+  },
+  {
     "id": "demo-parity",
     "claim": "The browser preview shows the same fake deployment-status result as asc demo.",
     "where": "/demo",

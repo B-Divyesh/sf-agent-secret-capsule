@@ -1,9 +1,9 @@
-# Copy audit — repair 3
+# Copy audit — repair 4
 
-Reviewed after removing the unproved native-keychain promise from the installed
-CLI and changelog. Landing and README visitor sentences remain at most 22 words.
-Commands, field labels, route paths, and stamped UI fragments are excluded from
-sentence counts. No banned marketing term appears.
+Reviewed after adding runtime proof for the installed `doctor` command's two
+privacy statements. Landing and README visitor sentences remain at most 22
+words. Commands, field labels, route paths, and stamped UI fragments are
+excluded from sentence counts. No banned marketing term appears.
 
 ## Landing page
 
@@ -125,6 +125,14 @@ sentence counts. No banned marketing term appears.
 | Root help | Agent Secret Capsule keeps named credentials behind local aliases. | 9 | `credential-lifecycle` |
 | Put help | Store or replace a credential under a local alias. | 9 | `credential-lifecycle` |
 | Changelog | Named credentials addressed through local aliases. | 6 | `credential-lifecycle` |
+
+## Doctor command
+
+| Location | Sentence or field | Words | Claim/evidence |
+| --- | --- | ---: | --- |
+| Help | Report local capability and storage paths without reading any secret. | 10 | `cli-doctor-privacy` |
+| JSON field | `"telemetry": false` | 1 | `cli-doctor-privacy` |
+| Human output | `telemetry: off` | 2 | `cli-doctor-privacy` |
 
 The removed wording named successful OS-keychain storage. Native success is not
 claimed because this clean worker has no unlocked platform credential service.
