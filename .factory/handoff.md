@@ -15,6 +15,8 @@ Repair 3 closes review 7 finding F-7-1.
 
 Implementation SHA: `6ce85df2f4a76d674fa95a08bda005918257cfcb`
 
+Verification documentation baseline: `1d53583897b464d69aa496307d7de73a614253e4`
+
 The implementation was pushed to `origin/main` and the static artifact was
 deployed to <https://agent-secret-capsule.sociobot.in/>. Azure Static Web Apps
 reported deployment `eb68eeb6-c281-41dd-b268-e9287a3d6eb0` as successful.
