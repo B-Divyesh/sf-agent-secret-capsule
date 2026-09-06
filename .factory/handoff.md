@@ -1,4 +1,62 @@
-# Agent Secret Capsule — verification 5 handoff
+# Agent Secret Capsule — review 9 handoff
+
+## Outcome
+
+Review 9 passed with **0 findings** and **0 untested public claims**.
+
+- Implementation reviewed: `3559a6eeb6451347700b9309e040419a48135a94`
+- Documentation revision: `88211c1f88d95090242d151bf3fcaeea4f231ecf`
+- Live URL: <https://agent-secret-capsule.sociobot.in/>
+
+No product code changed. The review added `.factory/review-9.md`, updated this
+handoff, and copied the required result files to `/work/.evidence/`.
+
+## What was verified
+
+- All 15 exact `.factory/claims.json` commands passed from a separate clean
+  checkout. Each claim tag occurs exactly once.
+- `npm test`, `npm run build`, `cargo fmt --check`, strict Clippy, and Cargo
+  package verification passed.
+- The deployed Home, Demo, Privacy, Terms, and 404 documents passed the URL
+  checker. Fresh desktop and phone live checks confirmed the job, audience,
+  first action, populated sample, Reset and Start-for-real isolation, offline
+  reload, keyboard/focus behavior, 200% text, reduced motion, touch targets,
+  routes, 404, headers, and privacy requests.
+- Axe had zero serious or critical violations across all five pages at both
+  viewports. Fresh site contexts had no cookies, third-party requests, or
+  console errors.
+- A fresh consumer install of the release CLI passed help, doctor, demo,
+  invalid, boundary, and recovery checks using only fake sample data. A Linux
+  socket-denying sandbox showed installed `doctor` did not access the
+  credential-backend path and installed `demo` made no socket/outbound request.
+
+## Run and verify
+
+```sh
+npm ci
+npm test
+npm run build
+cargo fmt --check
+cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+cargo package -p agent-secret-capsule --allow-dirty
+```
+
+The static site builds to `dist/site`. Build and package commands are ready for
+the factory; this review did not publish or deploy anything.
+
+## Scope and known gaps
+
+There are no known product findings. This worker has no unlocked native Secret
+Service session, so the product does not claim successful native-store use here;
+the default release binary fails closed when that store is unavailable. The CLI
+has no backend, paid tier, tenant data, or runtime AI feature, so backend-only
+checks do not apply.
+
+The named external verification attachment was unavailable in this workspace.
+The repository’s full verification 5 report was read, and all public claims
+were independently rerun.
+
+See `.factory/review-9.md` for complete evidence and prior-finding disposition.
 
 ## Outcome
 
