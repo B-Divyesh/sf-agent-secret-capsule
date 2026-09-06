@@ -1,47 +1,45 @@
-# Agent Secret Capsule — verification 4 handoff
+# Agent Secret Capsule — review 8 handoff
 
 ## Outcome
 
-Independent verification passed with zero findings and zero untested public
-claims.
+Strict review 8 **failed** with one major finding and two untested public
+claims. No product code was changed.
 
 - Implementation reviewed: `6ce85df2f4a76d674fa95a08bda005918257cfcb`
-- Documentation baseline: `12aba05065845d074c5a4ba92bd2744f01292a4a`
+- Documentation baseline: `80a7442b06e5a5ce5def4ed21a61564e1901aa95`
 - Live URL: <https://agent-secret-capsule.sociobot.in/>
-- Full report: `.factory/verification-4.md`
+- Full report: `.factory/review-8.md`
 
-No product code was changed. The live runtime matches the implementation build
-for all checked documents and assets. Commits after the implementation are
-documentation only.
+## Open finding
 
-## Verification completed
+F-8-1: installed `asc --help` says `doctor` reports capability and storage
+paths without reading a secret, while `asc --json doctor` reports
+`"telemetry": false`. Neither privacy claim has a `.factory/claims.json` entry
+or a tagged test. Add one release-binary claim test that verifies both, or
+remove the statements.
 
-- Every one of the 14 `.factory/claims.json` commands passed independently
-  from a fresh remote clone pinned to the implementation SHA.
-- `npm test` passed: 11 Rust tests, 2 Vitest tests, 40 Playwright passes, and 6
-  intentional duplicate-project skips.
-- `npm run build`, `cargo fmt --check`, strict all-feature Clippy, and package
-  verification passed. The package contains 11 expected files.
-- A new consumer prefix installed the packaged crate. Version, help, demo,
-  empty states, invalid input, duration boundary, and unavailable-store recovery
-  behaved as documented without input disclosure.
-- Fresh live desktop and phone contexts passed first-screen, one-click demo,
-  populated sample, persistent label, Reset, Start for real, real-data
-  isolation, keyboard, focus, Back, reduced motion, 200% text-size smoke,
-  touch-target, overflow, Axe, privacy, offline, update, link, route, legal,
-  security-header, and designed-404 checks.
-- `verify-url.sh` passed Home, Demo, Privacy, Terms, and `/404.html`.
-- Fresh mobile Lighthouse: 100 performance, 100 accessibility, 100 best
-  practices, 100 SEO; LCP 1.52 s, CLS 0, TBT 0 ms.
+## What passed
 
-## Earlier findings
+- Every one of the 14 declared claim commands passed independently in a fresh
+  clone pinned to the implementation SHA. Each tag occurs exactly once.
+- `npm test`, `npm run build`, `cargo fmt --check`, strict all-feature Clippy,
+  package verification, and a clean consumer installation passed.
+- The installed CLI's demo, empty states, invalid input, duration and limit
+  boundaries, unavailable-store recovery, and release/test-store separation
+  behaved safely without input disclosure.
+- Fresh live desktop and phone checks covered first-screen comprehension,
+  one-click/direct demo entry, realistic output, persistent sample labeling,
+  Reset, Start for real, unrelated-data isolation, keyboard use, focus, Back,
+  reduced motion, 200% text, touch targets, overflow, Axe, privacy, offline,
+  update state, links, titles, legal pages, headers, and the designed 404.
+- Live Home, Demo, Privacy, Terms, 404, emitted scripts and stylesheet, and the
+  phone hero matched the implementation build byte for byte.
+- Mobile Lighthouse scored 100/100/100/100; LCP was 1.37 seconds, CLS 0, and
+  total blocking time 0 ms.
 
-The full earlier review and verification record was rechecked. Parser, caching,
-first-screen, demo, claim-ledger, route, copy, legal, focus, touch-target,
-privacy, package, and paid-copy findings remain fixed or removed. Review 7's
-native-keychain claim is closed: unsupported success wording is absent, and the
-release-configured unavailable-store path fails closed without activating test
-storage or writing alias metadata.
+The separately named authoritative QA attachment was not present in this
+checkout or `/work/.evidence`. The complete repository verification-4 report
+was read and all required paths were rechecked independently.
 
 ## How to verify
 
@@ -54,15 +52,13 @@ cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
 cargo package -p agent-secret-capsule --allow-dirty
 ```
 
-Run every `test` command in `.factory/claims.json` separately. Open `/demo/`
-for the browser sandbox and run `asc demo` for the installed CLI sandbox.
+Run every `test` command in `.factory/claims.json` separately. Install the
+packaged crate into a new prefix and exercise `asc --help`, `asc --json demo`,
+empty JSON states, invalid inputs, time-limit bounds, and unavailable-store
+recovery.
 
-## Known gaps and next steps
+## Next step
 
-No product finding or deferred required work remains. This verifier has no
-unlocked native Secret Service session. Native-keychain success is not publicly
-claimed; test it on supported target operating systems before adding such a
-claim.
-
-There is no backend or paid offer, so backend tenancy/rate-limit and billing
-checks do not apply.
+Repair F-8-1, rerun the full claim inventory and quality gates from a clean
+checkout, then repeat the installed-artifact privacy check before declaring
+PASS. No backend, payment flow, or runtime AI check applies to this product.
